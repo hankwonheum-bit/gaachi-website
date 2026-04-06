@@ -315,14 +315,7 @@
 </script>
 </head>
 <body>
-<!-- Netlify Forms 감지용 숨겨진 폼 -->
-<form name="gaachi-contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
-  <input type="text" name="성함" />
-  <input type="tel" name="연락처" />
-  <input type="email" name="이메일" />
-  <select name="평가유형"><option>test</option></select>
-  <textarea name="문의내용"></textarea>
-</form>
+
 <nav id="navbar">
   <a href="#intro" class="nav-logo">
     <span class="nav-logo-main">가치앤같이</span>
@@ -632,8 +625,7 @@
           <div class="contact-cta-highlight">예상 감정평가액 · 수수료 무료 검토</div>
           <div class="contact-cta-main">문의 내용을 남겨주시면 신속하게 안내드립니다.</div>
         </div>
-        <form class="contact-form" name="gaachi-contact" method="POST" data-netlify="true" data-netlify-honeypot="bot-field">
-          <input type="hidden" name="form-name" value="gaachi-contact" />
+        <form class="contact-form" name="gaachi-contact" onsubmit="sendEmail(event)">
           <input type="hidden" name="bot-field" />
           <div class="form-row">
             <div class="form-group">
@@ -740,17 +732,34 @@ function sendEmail(e) {
   btn.textContent = '전송 중...';
   btn.disabled = true;
 
-  const url = 'https://script.google.com/macros/s/AKfycbzrQr08S-WRR1C5J-QkyJ0nqnA8wm3Is70qBfAMc14as4rbiN8Hb3KXs4-DUtMtvwczvQ/exec';
-  const params = new URLSearchParams({ name, tel, email, type, msg });
+  const formData = {
+    access_key: '4f2f7303-fa8b-480e-8d5c-70b6c70ae382',
+    subject: '[가치앤같이] 감정평가 문의: ' + type,
+    from_name: name,
+    성함: name,
+    연락처: tel,
+    이메일: email,
+    평가유형: type,
+    문의내용: msg
+  };
 
-  fetch(url + '?' + params.toString(), { method: 'GET', mode: 'no-cors' })
-    .then(() => {
-      alert('문의가 성공적으로 접수되었습니다. 빠르게 연락드리겠습니다.');
-      document.getElementById('contact-name').value = '';
-      document.getElementById('contact-tel').value = '';
-      document.getElementById('contact-email').value = '';
-      document.getElementById('contact-type').value = '';
-      document.getElementById('contact-msg').value = '';
+  fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData)
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert('문의가 성공적으로 접수되었습니다. 빠르게 연락드리겠습니다.');
+        document.getElementById('contact-name').value = '';
+        document.getElementById('contact-tel').value = '';
+        document.getElementById('contact-email').value = '';
+        document.getElementById('contact-type').value = '';
+        document.getElementById('contact-msg').value = '';
+      } else {
+        alert('전송 중 오류가 발생했습니다. 이메일로 직접 문의해 주세요.');
+      }
     })
     .catch(() => {
       alert('전송 중 오류가 발생했습니다. 이메일로 직접 문의해 주세요.');

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://gaachi.co.kr/sitemap.xml

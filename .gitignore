@@ -1,0 +1,5 @@
+# Google 서비스 계정 키 — 절대 커밋 금지
+*.json
+
+# 예외: 꼭 필요한 JSON은 아래에 명시적으로 허용
+# !manifest.json

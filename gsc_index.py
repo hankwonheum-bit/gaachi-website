@@ -16,7 +16,7 @@ import os
 # ============================================================
 URLS_TO_INDEX = [
     "https://gaachi.co.kr/cases/dongjak-daebang-epyeonhansesang-2026.html",
-    "https://gaachi.co.kr/cases/mapo-ahyeondong-2025.html",
+    "https://gaachi.co.kr/cases/gangdong-seongnae-2025.html",
     # 다음 작업 시 아래에 URL 추가:
     # "https://gaachi.co.kr/cases/다음-파일명.html",
 ]

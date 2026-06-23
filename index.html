@@ -821,6 +821,44 @@
           <p>문의: (02) 572-1900</p>
         </div>
       </div>
+
+      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/namyangju-byeollae-ipark-suite-2026.html'">
+        <div class="case-card-head">
+          <div class="case-num">08</div>
+          <div class="case-tag">상속·증여 감정평가</div>
+          <div class="case-title">경기 남양주시 별내동<br>별내역아이파크스위트 상가 감정평가</div>
+          <div class="case-purpose">세무서 제출용 · 상속·증여세 신고 시가참고</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">경기 남양주시 별내동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2026년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">3억 3,400만원</div></div>
+            <div class="case-more">상세 보기 →</div>
+          </div>
+          <div class="case-date-badge">2026. 06. 23 업데이트</div>
+        </div>
+        <!-- SEO: 크롤러용 상세 내용 -->
+        <div class="seo-content">
+          <h2>경기 남양주시 별내동 별내역아이파크스위트 상가 감정평가 사례</h2>
+          <p>가치앤같이 감정평가법인이 수행한 경기도 남양주시 별내동 별내역아이파크스위트 판매시설(구분상가) 감정평가 사례입니다.</p>
+          <p>평가목적: 세무서 제출용 (상속·증여세 신고 시가참고)</p>
+          <p>소재지: 경기도 남양주시 별내동</p>
+          <p>용도: 판매시설(구분상가) / 전유면적: 46.575㎡ / 공급면적: 136.029㎡ / 소유권대지권: 9.33㎡</p>
+          <p>용도지역: 일반상업지역 / 주구조: 철근콘크리트조 / 사용승인: 2021년 (약 5년 경과)</p>
+          <p>기준시점: 2026년</p>
+          <p>감정평가 방법론: 거래사례비교법. 인근 동일 집합상가 내 비교사례(전용 57.475㎡, 2024년 거래, 약 6,440,000원/㎡) 채택.</p>
+          <p>사정보정(×1.000), 시점수정(×1.01101, 경기 남양주별내 집합상가 자본수익률), 개별요인(×1.100) 적용.</p>
+          <p>산정단가: 7,161,995원/㎡</p>
+          <p>최종 감정평가액: 3억 3,400만원 (334,000,000원)</p>
+          <p>공법상 제한: 일반상업지역, 별내택지개발지구 지구단위계획구역, 수도권 과밀억제권역</p>
+          <p>감정평가법인: 가치앤같이 감정평가법인 (서울특별시 서초구 강남대로 86, 5층, 양재동 가람빌딩)</p>
+          <p>문의: (02) 572-1900</p>
+        </div>
+      </div>
     </div>
     <div class="no-result" id="noResult">해당 카테고리의 사례가 없습니다.</div>
   </div>
@@ -939,76 +977,4 @@ window.addEventListener('scroll', () => {
   navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
 }, { passive: true });
 function filterCases(cat, btn) {
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const cards = document.querySelectorAll('.case-card');
-  let visible = 0;
-  cards.forEach(card => {
-    if (cat === '전체' || card.dataset.cat === cat) { card.classList.remove('hidden'); visible++; }
-    else { card.classList.add('hidden'); }
-  });
-  document.getElementById('noResult').classList.toggle('show', visible === 0);
-}
-function openModal(id) { document.getElementById('modal-' + id).classList.add('open'); document.body.style.overflow = 'hidden'; }
-function closeModal(id) { document.getElementById('modal-' + id).classList.remove('open'); document.body.style.overflow = ''; }
-function closeModalOutside(e) { if (e.target.classList.contains('modal-overlay')) { e.target.classList.remove('open'); document.body.style.overflow = ''; } }
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { document.querySelectorAll('.modal-overlay.open').forEach(m => { m.classList.remove('open'); document.body.style.overflow = ''; }); }
-});
-function sendEmail(e) {
-  e.preventDefault();
-  const name = document.getElementById('contact-name')?.value || '';
-  const tel = document.getElementById('contact-tel')?.value || '';
-  const email = document.getElementById('contact-email')?.value || '';
-  const type = document.getElementById('contact-type')?.value || '';
-  const msg = document.getElementById('contact-msg')?.value || '';
-
-  if (!name || !tel || !type) {
-    alert('성함, 연락처, 평가 유형은 필수 입력 항목입니다.');
-    return;
-  }
-
-  const btn = document.querySelector('.form-submit');
-  btn.textContent = '전송 중...';
-  btn.disabled = true;
-
-  const formData = {
-    access_key: '4f2f7303-fa8b-480e-8d5c-70b6c70ae382',
-    subject: '[가치앤같이] 감정평가 문의: ' + type,
-    from_name: name,
-    성함: name,
-    연락처: tel,
-    이메일: email,
-    평가유형: type,
-    문의내용: msg
-  };
-
-  fetch('https://api.web3forms.com/submit', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData)
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        alert('문의가 성공적으로 접수되었습니다. 빠르게 연락드리겠습니다.');
-        document.getElementById('contact-name').value = '';
-        document.getElementById('contact-tel').value = '';
-        document.getElementById('contact-email').value = '';
-        document.getElementById('contact-type').value = '';
-        document.getElementById('contact-msg').value = '';
-      } else {
-        alert('전송 중 오류가 발생했습니다. 이메일로 직접 문의해 주세요.');
-      }
-    })
-    .catch(() => {
-      alert('전송 중 오류가 발생했습니다. 이메일로 직접 문의해 주세요.');
-    })
-    .finally(() => {
-      btn.textContent = '문의하기 →';
-      btn.disabled = false;
-    });
-}
-</script>
-</body>
-</html>
+  document.

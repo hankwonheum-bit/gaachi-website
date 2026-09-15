@@ -1,0 +1,118 @@
+token	설명	예시	필수여부	마스킹규칙
+PAGE_TITLE	<title> 전문. 「지역+물건+목적 감정평가 사례 — 가치앤같이 감정평가법인」 형식. 60자 내외	서울 강동구 성내동 근린생활시설 상속 감정평가 사례 — 가치앤같이 감정평가법인	필수	지번·호수 금지. 동 단위까지만
+META_DESCRIPTION	meta description. 최종액·기준시점·평가방법·법인명을 반드시 포함. 140~160자	서울특별시 강동구 성내동 소재 근린생활시설(토지 177㎡, 건물 314.68㎡) 상속세 신고 목적 감정평가 사례. 기준시점 2025년 11월 7일, 최종 감정평가액 1,577,010,440원. 토지 거래사례비교법·건물 원가법 적용. ㈜감정평가법인 가치앤같이.	필수	지번·호수 금지
+META_KEYWORDS	쉼표 구분 키워드 6~10개. 본문에 실제로 등장하는 말만 사용	강동구 성내동 감정평가, 성내동 근린생활시설 감정평가, 상속 감정평가, 상속세 신고, 거래사례비교법, 원가법, 가치앤같이	선택	—
+OG_TITLE	OG 제목. PAGE_TITLE 축약형	서울 강동구 성내동 근린생활시설 상속 감정평가 사례 — 가치앤같이	필수	지번·호수 금지
+OG_DESCRIPTION	OG 설명. 1~2문장, 100자 내외	강동구 성내동 근린생활시설 상속세 신고 목적 감정평가. 최종 평가액 1,577,010,440원. 토지 거래사례비교법 + 건물 원가법. 기준시점 2025.11.07.	필수	지번·호수 금지
+SLUG	파일명(확장자 제외). 영문 소문자+하이픈. canonical·og:url·breadcrumb에 동시 사용	gangdong-seongnae-geunsaeng-v2-2025	필수	cases/ 기존 파일명과 중복 금지
+PUBLISHED_DATE	최초 게시일 YYYY-MM-DD (KST)	2026-09-15	필수	—
+MODIFIED_DATE	최종 수정일 YYYY-MM-DD (KST). 재게시 시 반드시 갱신	2026-09-15	필수	—
+ARTICLE_SECTION	og article:section. 상속·증여 감정평가 / 세무서 제출 감정평가 등	상속 감정평가	필수	—
+ARTICLE_TAG_1	article:tag 1 — 목적 축	상속 감정평가	필수	—
+ARTICLE_TAG_2	article:tag 2 — 지역 축	강동구 성내동	필수	지번 금지
+ARTICLE_TAG_3	article:tag 3 — 물건종류 축	근린생활시설 감정평가	필수	—
+HEADLINE	JSON-LD Article.headline 및 itemprop headline. h1과 의미 일치	서울 강동구 성내동 근린생활시설 상속 감정평가 사례	필수	지번·호수 금지
+JSONLD_DESCRIPTION	JSON-LD Article.description. 숫자(면적·평가액·기준시점) 포함 필수	서울특별시 강동구 성내동 소재 근린생활시설(토지 177㎡, 건물 연면적 314.68㎡) 상속세 신고 목적 감정평가. 기준시점 2025년 11월 7일, 최종 감정평가액 1,577,010,440원.	필수	지번·호수 금지. 큰따옴표는 \" 로 이스케이프
+APPRAISER_NAME	담당 감정평가사 성명. JSON-LD author(Person) + 본문 byline에 사용. 소속 평가사만 기재	김지광	필수	의뢰인·소유자 성명은 절대 사용 금지. 평가사 성명만 허용
+OBJECT_NAME	JSON-LD about.name. 물건의 정식 표기	서울특별시 강동구 성내동 근린생활시설	필수	지번·호수 금지
+OBJECT_STREET	JSON-LD PostalAddress.streetAddress. 동 단위까지	성내동	필수	지번 금지. 동 단위까지
+OBJECT_LOCALITY	시·군·구	강동구	필수	—
+OBJECT_REGION	시·도	서울특별시	필수	—
+OBJECT_DESCRIPTION	JSON-LD about.description. 구조·층수·면적·사용승인·용도지역을 숫자로	근린생활시설, 지상2층·지하1층, 토지 177㎡, 연면적 314.68㎡, 사용승인 1993.11.03., 제3종일반주거지역	필수	호수 금지
+VALUE_NUMERIC	JSON-LD about.price. 쉼표 없는 정수 문자열	1577010440	필수	—
+GIJUN_ISO	기준시점 ISO 날짜. 모든 <time datetime> 에 사용	2025-11-07	필수	—
+JSONLD_KEYWORDS	JSON-LD Article.keywords. META_KEYWORDS와 동일 또는 축약	강동구 성내동 감정평가, 상속 감정평가, 근린생활시설 감정평가, 거래사례비교법, 원가법, 기준시점 2025년 11월	선택	—
+FAQ1_Q	FAQ 1 질문. 본문 <h3> 텍스트와 글자 단위로 완전 일치해야 함	강동구 성내동 근린생활시설의 감정평가액은 얼마인가요?	필수	지번·호수 금지
+FAQ1_A_TEXT	FAQ 1 답변 (JSON-LD용 순수 텍스트). FAQ1_A_HTML 에서 태그만 제거한 것과 동일	기준시점 2025년 11월 7일 현재 ... 입니다.	필수	큰따옴표는 \" 로 이스케이프
+FAQ2_Q	FAQ 2 질문 — 평가방법 축	토지·건물 상속 감정평가는 어떤 방법으로 하나요?	필수	—
+FAQ2_A_TEXT	FAQ 2 답변 (JSON-LD용 순수 텍스트)	토지는 「감정평가에 관한 규칙」 제14조 ... 입니다.	필수	큰따옴표 이스케이프
+FAQ3_Q	FAQ 3 질문 — 신청 시기 / 세법 축	상속 감정평가는 언제까지 받아야 시가로 인정되나요?	필수	—
+FAQ3_A_TEXT	FAQ 3 답변 (JSON-LD용 순수 텍스트)	「상속세 및 증여세법 시행령」 제49조에 따라 ... 입니다.	필수	큰따옴표 이스케이프
+FAQ4_Q	FAQ 4 질문 — 법인 문의 축. 법인 정식명칭 포함	㈜감정평가법인 가치앤같이에 감정평가를 의뢰하려면 어떻게 하나요?	필수	—
+FAQ4_A_TEXT	FAQ 4 답변 (JSON-LD용 순수 텍스트). 주소·전화 명시	㈜감정평가법인 가치앤같이는 서울특별시 서초구 강남대로 86, 5층 501호 ... (02) 572-1900	필수	수수료 금액 언급 금지
+BREADCRUMB_CAT	BreadcrumbList 3단계 카테고리명	상속·증여	필수	—
+BREADCRUMB_LEAF	BreadcrumbList 4단계 페이지명	강동구 성내동 근린생활시설 상속 감정평가	필수	지번·호수 금지
+CASE_TAG	헤더 좌상단 골드 배지. 실제 평가목적 반영	상속 감정평가	필수	—
+H1_LINE1	h1 1행 — 지역	서울 강동구 성내동	필수	동 단위까지
+H1_LINE2	h1 2행 — 물건종류+평가목적. 뒤에 "(기준시점 …)" 이 자동으로 붙음	근린생활시설 상속 감정평가 사례	필수	지번·호수 금지
+GIJUN_YM_KR	h1 꼬리 기준시점 연·월	2025년 11월	필수	—
+LEAD_ANSWER	★직답 단락. 2~3문장. ①최종 감정평가액 ②기준시점 ③적용 평가방법 ④법인 정식명칭+소재지 를 모두 포함. AI가 그대로 인용하는 청크이므로 이 단락만 읽어도 결론이 완결돼야 함	㈜감정평가법인 가치앤같이가 평가한 서울특별시 강동구 성내동 근린생활시설의 최종 감정평가액은 <strong>1,577,010,440원</strong>(기준시점 2025년 11월 7일)입니다. …	필수	수수료 금액 금지. 지번·호수 금지
+HEADER_SUB	헤더 보조행 앞부분 — 소재지+물건 요약	서울특별시 강동구 성내동 근린생활시설(토지 177㎡·건물 314.68㎡)	필수	지번·호수 금지
+GIJUN_KR	기준시점 한글 표기	2025년 11월 7일	필수	—
+PURPOSE_FULL	감정평가목적 전체 표기	상속세 신고 및 관할 세무서 제출 목적	필수	—
+MODIFIED_DATE_KR	최종 업데이트 한글 표기	2026년 9월 15일	필수	—
+VALUE_SHORT	헤더 큰 숫자. 억/만원 단위 축약	15억 7,701만원	필수	—
+VALUE_COMMA	원 단위 쉼표 표기. 여러 곳에 재사용	1,577,010,440	필수	—
+PURPOSE_SHORT	목적 두 글자. 정의 h2 및 법인 소개에 사용	상속	필수	—
+DEF_SENTENCE_1	[정의] 블록 1문장. "○○ 감정평가란 …이다" 형태의 사전적 정의	상속 감정평가란 피상속인의 사망으로 이전되는 부동산의 가치를 감정평가사가 상속개시일 기준 시가로 산정하는 절차입니다.	필수	—
+DEF_SENTENCE_2	[정의] 블록 2문장. 근거 법령 1개 + 법인 정식명칭 1회	「상속세 및 증여세법」 제60조 … ㈜감정평가법인 가치앤같이는 …	필수	—
+REGION	지역 축약. 여러 h2에 재사용	강동구 성내동	필수	동 단위까지
+OBJECT_SHORT	물건종류 축약. 여러 h2에 재사용	근린생활시설	필수	—
+OVERVIEW_SUMMARY	대상물건 개요 요약 단락. 면적·구조·연식·입지를 숫자로	서울특별시 강동구 성내동 소재 … 토지 177㎡, 건물 연면적 314.68㎡ …	필수	지번·호수 금지
+INFO_ADDR	개요 그리드 — 소재지	서울 강동구 성내동	필수	동 단위까지
+INFO_LABEL_2	개요 그리드 2번 라벨	주구조	필수	—
+INFO_VAL_2	개요 그리드 2번 값	철근콘크리트조	필수	—
+INFO_LABEL_3	개요 그리드 3번 라벨	주용도	필수	—
+INFO_VAL_3	개요 그리드 3번 값	근린생활시설	필수	—
+INFO_LABEL_4	개요 그리드 4번 라벨	층수 / 연면적	필수	본건 층수는 제█층 마스킹
+INFO_VAL_4	개요 그리드 4번 값	지하1층 · 지상2층 / 314.68㎡	필수	집합건물이면 층수 제█층 · 호수 ███호
+INFO_LABEL_5	개요 그리드 5번 라벨	토지면적 / 지목	필수	—
+INFO_VAL_5	개요 그리드 5번 값	177㎡ / 대	필수	—
+INFO_LABEL_6	개요 그리드 6번 라벨	단지규모	선택	—
+INFO_VAL_6	개요 그리드 6번 값	—	선택	—
+INFO_ZONE	용도지역	제3종일반주거지역	필수	—
+INFO_APPROVAL	사용승인일 + 경과연수	1993.11.03. (약 32년 경과)	필수	—
+GIJUN_DOT	기준시점 점 표기	2025. 11. 07.	필수	—
+VALUE_ANSWER_P1	평가액 h2 아래 1문단. 최종액·기준시점·면적·단가를 숫자로	기준시점 2025년 11월 7일 현재 … 1,577,010,440원입니다.	필수	수수료 금액 금지
+VALUE_ANSWER_P2	평가액 h2 아래 2문단. 토지/건물 내역 또는 단가 근거	토지 1,477,950,000원 + 건물 99,060,440원 …	필수	공시가격보다 낮다는 취지 서술 금지
+VALUE_BREAKDOWN	FINAL 박스 하단 내역 1행. 2곳에 재사용	토지 1,477,950,000원 + 건물 99,060,440원 · 십오억칠천칠백일만사백사십원	필수	—
+METHOD_SUMMARY	평가방법 요약 단락. 채택/생략 사유와 근거 조문 언급	「감정평가에 관한 규칙」 제14조·제15조에 따라 …	필수	—
+METHOD1_SELECTED	1번 방법 채택 여부. 채택이면 selected, 생략이면 빈 문자열	selected	필수	값은 selected 또는 공란만 허용
+METHOD1_NAME	1번 방법 <h3> 제목	토지 — 거래사례비교법	필수	—
+METHOD1_REASON	1번 방법 채택/생략 사유. 근거 조문 포함	「감정평가에 관한 규칙」 제14조 … 공시지가기준법으로 교차 검토	필수	—
+METHOD2_SELECTED	2번 방법 채택 여부	selected	필수	selected 또는 공란
+METHOD2_NAME	2번 방법 <h3> 제목	건물 — 원가법 (잔가법)	필수	—
+METHOD2_REASON	2번 방법 채택/생략 사유	「감정평가에 관한 규칙」 제15조 …	필수	—
+METHOD3_SELECTED	3번 방법 채택 여부. 보통 생략 방법이므로 공란	(공란)	선택	selected 또는 공란
+METHOD3_NAME	3번 방법 <h3> 제목. 미사용 시 블록 전체 삭제	수익환원법	선택	—
+METHOD3_REASON	3번 방법 채택/생략 사유	「감정평가에 관한 규칙」 제15조 …	선택	—
+METHOD4_SELECTED	4번 방법 채택 여부. 보통 생략 방법이므로 공란	(공란)	선택	selected 또는 공란
+METHOD4_NAME	4번 방법 <h3> 제목. 미사용 시 블록 전체 삭제	수익환원법	선택	—
+METHOD4_REASON	4번 방법 생략 사유	표준적 임대료·환원이율 파악이 곤란하여 시산가액 산출이 적절하지 않으므로 생략	선택	—
+COMP_SUMMARY	비교사례 요약 단락. 단가 레인지를 숫자로	성내동 일대 … 8,270,000~10,000,000원/㎡ 수준	필수	—
+COMP_TABLE1_TITLE	1번 표 <h3> 제목	감정평가전례 (복합부동산에서 건물가액 공제 후 토지단가 산정)	필수	—
+COMP_TABLE1_HEAD	1번 표 <th> 묶음 HTML 한 줄	<th>기호</th><th>소재지</th>…	필수	—
+COMP_TABLE1_ROWS	1번 표 <tr> 묶음 HTML	<tr><td>①</td>…</tr>	필수	전례 기준시점 연도만·목적 — 처리·지번 ███ 마스킹
+COMP_TABLE2_TITLE	2번 표 <h3> 제목	거래사례 (국토교통부 실거래가 기준)	필수	—
+COMP_TABLE2_HEAD	2번 표 <th> 묶음 HTML 한 줄	<th>기호</th><th>소재지</th>…	필수	—
+COMP_TABLE2_ROWS	2번 표 <tr> 묶음 HTML. 채택 행에 class="selected-row" + badge-sel	<tr class="selected-row">…</tr>	필수	비교사례 층수 삭제(동/호만)·지번 ███ 마스킹
+CALC_SUMMARY	산정과정 요약 단락. 시점수정률·개별요인치·결정단가를 숫자로	거래사례 ㉮ … 시점수정 ×1.01116, 개별요인 ×0.980 → 8,350,000원/㎡	필수	—
+CALC_GROUP1_TITLE	1번 산정 흐름 <h3> 제목	LAND — 거래사례비교법	필수	—
+CALC_GROUP1_STEPS	1번 산정 흐름 calc-step 묶음 HTML	<div class="calc-step">…</div>	필수	지번 ███ 마스킹
+CALC_GROUP2_TITLE	2번 산정 흐름 <h3> 제목. 단일방법이면 블록 전체 삭제	BUILDING — 원가법 (잔가법)	선택	—
+CALC_GROUP2_STEPS	2번 산정 흐름 calc-step 묶음 HTML	<div class="calc-step">…</div>	선택	—
+TIMING_NOTE	신청 시기 h2 2문단 중간 삽입 문장. 본 사례가 평가기간 내임을 명시	상속개시일 전후 6개월의 평가기간 내에 가격산정기준일과 감정평가서 작성일이 모두 포함되도록 진행하였습니다.	필수	상속 전후 6개월 / 증여 전 6개월·후 3개월 기준을 정확히 표기
+RESTRICT_SUMMARY	공법상 제한 요약 단락	대상토지는 제3종일반주거지역으로 …	필수	—
+RESTRICT_ZONE	용도지역 값	도시지역 · 제3종일반주거지역	필수	—
+RESTRICT_LABEL_2	제한 그리드 2번 라벨	지구단위계획구역	필수	—
+RESTRICT_VAL_2	제한 그리드 2번 값	지구단위계획구역 (2014.06.25. 지정)	필수	—
+RESTRICT_LABEL_3	제한 그리드 3번 라벨	교육환경 보호구역	필수	—
+RESTRICT_VAL_3	제한 그리드 3번 값	교육환경보호구역 (상세내용 별도확인)	필수	—
+RESTRICT_ETC	기타 제한 값	가축사육제한구역 · 대공방위협조구역 · 과밀억제권역	필수	—
+RESTRICT_ALERT	제한 알림 박스 HTML. 해당 없으면 블록 전체 삭제	<strong>⚠ 토지거래계약 허가구역 지정</strong><br>…	선택	—
+FAQ1_A_HTML	FAQ 1 답변 (본문 표시용, <strong>·<time> 허용). 태그 제거 시 FAQ1_A_TEXT와 일치	기준시점 <time datetime="2025-11-07">2025년 11월 7일</time> 현재 …	필수	수수료 금액 금지
+FAQ2_A_HTML	FAQ 2 답변 (본문 표시용)	토지는 <strong>거래사례비교법</strong> …	필수	—
+FAQ3_A_HTML	FAQ 3 답변 (본문 표시용)	「상속세 및 증여세법 시행령」 제49조 …	필수	기간 기준 정확히
+FAQ4_A_HTML	FAQ 4 답변 (본문 표시용). 법인 정식명칭·주소·전화 포함	㈜감정평가법인 가치앤같이는 … <strong>(02) 572-1900</strong>	필수	수수료 금액 금지
+INDEX_NAME	시점수정에 사용한 한국부동산원 지수명. 출처 목록에 삽입	강동구 상업용부동산 자본수익률	필수	실제 사용한 지수명만 기재
+FIRM_EXPERIENCE	법인 소개 2문단 꼬리. 본 사례 유형 관련 수행 경험 1문장	특히 서울 동남권 노후 복합부동산의 상속·증여 감정평가 수행 경험이 축적되어 있습니다.	필수	건수·수수료 등 검증 불가 수치 금지
+HUB_URL	허브(목록) 링크 URL 1개	/#cases	필수	—
+HUB_LABEL	허브 링크 라벨	전체 감정평가 사례 목록 보기	필수	—
+REL1_URL	형제 사례 1 URL. cases/ 내 실재 파일이어야 함	/cases/seongbuk-dongseondong-2025.html	필수	존재하지 않는 URL 금지
+REL1_LABEL	형제 사례 1 라벨	성북구 동선동 다가구주택 상속 감정평가	필수	—
+REL2_URL	형제 사례 2 URL	/cases/gangnam-ilwon-woosungchapt-2025.html	필수	존재하지 않는 URL 금지
+REL2_LABEL	형제 사례 2 라벨	강남구 일원동 우성7차 감정평가	필수	—
+REL3_URL	형제 사례 3 URL	/cases/dongjak-daebang-epyeonhansesang-sangsok-2026.html	필수	존재하지 않는 URL 금지
+REL3_LABEL	형제 사례 3 라벨	동작구 대방동 이편한세상 상속 감정평가	필수	—
+REL4_URL	형제 사례 4 URL. 3건만 넣을 경우 <li> 통째로 삭제	/cases/namyangju-byeollae-ipark-suite-2026.html	선택	존재하지 않는 URL 금지
+REL4_LABEL	형제 사례 4 라벨	남양주 별내동 아이파크스위트 상가 감정평가	선택	—

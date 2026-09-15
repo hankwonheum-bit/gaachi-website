@@ -1,4 +1,117 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# robots.txt — ㈜감정평가법인 가치앤같이 (https://gaachi.co.kr)
+#
+# 목적: 검색엔진 + AI 답변엔진(ChatGPT / Claude / Perplexity / Google AI
+#       Overviews / Naver 등)이 본 사이트의 감정평가 사례를 자유롭게 수집하고
+#       인용할 수 있도록 명시적으로 허용합니다.
+#       감정평가 문의 시 당사 페이지가 근거자료로 인용되는 것을 환영합니다.
+#
+# 차단 대상: SEO 경쟁정보 수집 크롤러 및 robots.txt 준수 이력이 불량한 크롤러만
+#           최소한으로 차단합니다.
+#
+# ※ 중요 ※ Cloudflare 대시보드의 "Managed robots.txt"(AI 학습 차단) 기능이
+#   켜져 있으면 Cloudflare가 이 파일 앞에 GPTBot / ClaudeBot / Google-Extended
+#   / CCBot / Applebot-Extended / meta-externalagent / Amazonbot / Bytespider
+#   에 대한 "Disallow: /" 블록을 자동 주입하여 아래 설정을 무력화합니다.
+#   반드시 대시보드에서 해당 기능을 끄십시오. (SEO_점검_v1.md 참조)
+# ─────────────────────────────────────────────────────────────────────────────
+
+# 기본 정책 — 모든 크롤러 전체 허용 + 콘텐츠 시그널로 이용 의사 명시
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
 Allow: /
+
+# ── OpenAI (ChatGPT) ─────────────────────────────────────────────────────────
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+# ── Anthropic (Claude) ───────────────────────────────────────────────────────
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+# ── Perplexity ───────────────────────────────────────────────────────────────
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# ── Google (검색 + AI Overviews / Gemini) ────────────────────────────────────
+User-agent: Googlebot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# ── Microsoft Bing (Copilot) ─────────────────────────────────────────────────
+User-agent: Bingbot
+Allow: /
+
+# ── 국내 포털 ────────────────────────────────────────────────────────────────
+# Yeti = 네이버 검색 크롤러
+User-agent: Yeti
+Allow: /
+
+# Daum = 다음 검색 크롤러
+User-agent: Daum
+Allow: /
+
+# ── Apple (Siri / Apple Intelligence) ────────────────────────────────────────
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# ── DuckDuckGo AI ────────────────────────────────────────────────────────────
+User-agent: DuckAssistBot
+Allow: /
+
+# ── Mistral ──────────────────────────────────────────────────────────────────
+User-agent: MistralAI-User
+Allow: /
+
+# ── Meta AI ──────────────────────────────────────────────────────────────────
+User-agent: meta-externalagent
+Allow: /
+
+# ── Common Crawl (다수 LLM의 학습/검색 데이터 원천) ──────────────────────────
+User-agent: CCBot
+Allow: /
+
+# ── Amazon (Alexa / Rufus) ───────────────────────────────────────────────────
+User-agent: Amazonbot
+Allow: /
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 차단 목록 — robots.txt 미준수 이력 크롤러 및 SEO 경쟁정보 수집 크롤러
+# ─────────────────────────────────────────────────────────────────────────────
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
 
 Sitemap: https://gaachi.co.kr/sitemap.xml

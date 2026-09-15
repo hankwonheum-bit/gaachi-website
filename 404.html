@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, follow" />
+<meta name="author" content="㈜감정평가법인 가치앤같이" />
+<title>페이지를 찾을 수 없습니다 (404) — 가치앤같이 감정평가법인</title>
+<meta name="description" content="요청하신 페이지를 찾을 수 없습니다. 가치앤같이 감정평가법인 홈페이지 또는 감정평가 사례 목록에서 원하시는 내용을 찾아보실 수 있습니다." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #B8935A;
+    --gold-dim: rgba(184,147,90,0.2);
+    --bg: #F7F5F0;
+    --bg2: #EEEBe4;
+    --bg3: #E8E4DC;
+    --text: #1C1A16;
+    --text-dim: rgba(28,26,22,0.65);
+    --text-faint: rgba(28,26,22,0.38);
+    --border: rgba(28,26,22,0.1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* NAV */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; height: 64px; padding: 0 6vw; display: flex; align-items: center; justify-content: space-between; background: rgba(247,245,240,0.94); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
+  .nav-logo { display: flex; align-items: baseline; gap: 10px; text-decoration: none; }
+  .nav-logo-main { font-family: 'Noto Serif KR', serif; font-size: 17px; font-weight: 700; color: var(--gold); letter-spacing: 1px; }
+  .nav-logo-sub { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 11px; color: rgba(184,147,90,0.42); letter-spacing: 4px; }
+  .nav-back { font-size: 13px; color: var(--text-dim); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color .2s; }
+  .nav-back:hover { color: var(--gold); }
+
+  /* MAIN */
+  main { max-width: 860px; width: 100%; margin: 0 auto; padding: 120px 6vw 80px; flex: 1; }
+
+  /* HEADER */
+  .err-header { background: var(--bg3); border: 1px solid var(--border); border-radius: 14px; padding: 48px 44px 42px; margin-bottom: 28px; text-align: center; }
+  .err-code { font-family: 'Cormorant Garamond', serif; font-size: clamp(64px, 14vw, 112px); font-weight: 600; color: var(--gold); line-height: 1; letter-spacing: 2px; }
+  .err-label { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 5px; color: rgba(184,147,90,0.55); text-transform: uppercase; margin-top: 10px; }
+  .err-header h1 { font-family: 'Noto Serif KR', serif; font-size: clamp(20px, 3.2vw, 27px); font-weight: 700; color: var(--text); line-height: 1.45; margin-top: 20px; }
+  .err-sub { font-size: 14px; color: var(--text-dim); line-height: 1.85; margin-top: 14px; }
+  .err-line { width: 40px; height: 2px; background: linear-gradient(90deg, var(--gold), transparent); margin: 22px auto 0; }
+
+  /* SECTION */
+  .err-section { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 28px 32px; margin-bottom: 20px; }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 4px; color: rgba(184,147,90,0.6); text-transform: uppercase; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .link-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .link-item a { display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg2); text-decoration: none; transition: border-color .2s, background .2s; }
+  .link-item a:hover { border-color: rgba(184,147,90,0.35); background: rgba(184,147,90,0.07); }
+  .link-icon { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; background: rgba(184,147,90,0.12); color: var(--gold); }
+  .link-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .link-desc { font-size: 13px; color: var(--text-dim); line-height: 1.7; }
+
+  /* CTA */
+  .err-cta { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 28px 32px; text-align: center; margin-top: 32px; }
+  .err-cta-title { font-family: 'Noto Serif KR', serif; font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+  .err-cta-desc { font-size: 14px; color: var(--text-dim); margin-bottom: 20px; line-height: 1.7; }
+  .err-cta-tel { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: var(--gold); letter-spacing: 1px; margin-bottom: 20px; }
+  .err-cta-tel a { color: inherit; text-decoration: none; }
+  .btn-primary { display: inline-block; background: var(--gold); color: #fff; font-weight: 700; font-size: 14px; padding: 14px 36px; border-radius: 4px; text-decoration: none; letter-spacing: .5px; transition: background .2s; }
+  .btn-primary:hover { background: #a07d48; }
+  .btn-outline { display: inline-block; border: 1px solid rgba(184,147,90,0.5); color: var(--gold); font-size: 14px; padding: 14px 36px; border-radius: 4px; text-decoration: none; margin-left: 12px; transition: border-color .2s, background .2s; }
+  .btn-outline:hover { border-color: var(--gold); background: rgba(184,147,90,0.07); }
+
+  /* FOOTER */
+  footer { border-top: 1px solid var(--border); padding: 32px 6vw; text-align: center; background: var(--bg3); }
+  .footer-name { font-family: 'Noto Serif KR', serif; font-size: 14px; color: var(--gold); font-weight: 700; margin-bottom: 4px; }
+  .footer-info { font-size: 12px; color: var(--text-faint); line-height: 1.8; }
+  .footer-links { font-size: 12px; color: var(--text-faint); margin-top: 10px; }
+  .footer-links a { color: var(--text-faint); text-decoration: none; margin: 0 8px; }
+  .footer-links a:hover { color: var(--gold); }
+
+  @media (max-width: 640px) {
+    main { padding: 100px 6vw 60px; }
+    .err-header { padding: 34px 22px 30px; }
+    .err-section, .err-cta { padding: 22px 18px; }
+    .btn-outline { margin-left: 0; margin-top: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <span class="nav-logo-main">가치앤같이</span>
+    <span class="nav-logo-sub">APPRAISAL</span>
+  </a>
+  <a href="/#cases" class="nav-back">← 평가 사례 목록</a>
+</nav>
+
+<main>
+  <div class="err-header">
+    <div class="err-code">404</div>
+    <div class="err-label">Page Not Found</div>
+    <h1>요청하신 페이지를 찾을 수 없습니다</h1>
+    <p class="err-sub">
+      주소가 변경되었거나 삭제된 페이지일 수 있습니다.<br>
+      아래 링크를 통해 원하시는 내용을 찾아보시거나, 직접 문의해 주십시오.
+    </p>
+    <div class="err-line"></div>
+  </div>
+
+  <div class="err-section">
+    <div class="section-title">Quick Links</div>
+    <ul class="link-list">
+      <li class="link-item">
+        <a href="/">
+          <span class="link-icon">⌂</span>
+          <span>
+            <span class="link-name">홈페이지</span>
+            <span class="link-desc">가치앤같이 감정평가법인 소개, 업무 분야, 구성원, 문의 안내를 한 페이지에서 확인하실 수 있습니다.</span>
+          </span>
+        </a>
+      </li>
+      <li class="link-item">
+        <a href="/#cases">
+          <span class="link-icon">▤</span>
+          <span>
+            <span class="link-name">감정평가 사례</span>
+            <span class="link-desc">상속·증여 감정평가, 세무서 제출용 시가인정액, 법원 촉탁 등 실제 수행한 감정평가 사례를 공개하고 있습니다.</span>
+          </span>
+        </a>
+      </li>
+      <li class="link-item">
+        <a href="/#contact">
+          <span class="link-icon">✆</span>
+          <span>
+            <span class="link-name">문의하기</span>
+            <span class="link-desc">예상 감정평가액 및 수수료에 대한 무료 사전 검토를 제공합니다.</span>
+          </span>
+        </a>
+      </li>
+      <li class="link-item">
+        <a href="/sitemap.xml">
+          <span class="link-icon">⌗</span>
+          <span>
+            <span class="link-name">사이트맵</span>
+            <span class="link-desc">본 사이트에 공개된 전체 페이지 목록입니다.</span>
+          </span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="err-cta">
+    <div class="err-cta-title">감정평가가 필요하십니까?</div>
+    <div class="err-cta-desc">
+      상속세·증여세 신고용, 취득세 시가인정액, 법원 촉탁 등<br>
+      세무·회계 전문 특화 감정평가법인 가치앤같이에 문의하세요.
+    </div>
+    <div class="err-cta-tel"><a href="tel:+82-2-572-1900">02-572-1900</a></div>
+    <a href="/#contact" class="btn-primary">무료 문의하기</a>
+    <a href="/#cases" class="btn-outline">감정평가 사례 보기</a>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-name">㈜감정평가법인 가치앤같이</div>
+  <div class="footer-info">서울특별시 서초구 강남대로 86, 5층 501호 (양재동, 가람빌딩) · TEL (02) 572-1900 · FAX (02) 572-1901</div>
+  <div class="footer-links">
+    <a href="/">홈</a>
+    <a href="/#cases">감정평가 사례</a>
+    <a href="/#contact">문의하기</a>
+    <a href="/privacy.html">개인정보처리방침</a>
+  </div>
+</footer>
+
+</body>
+</html>

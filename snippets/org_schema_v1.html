@@ -1,0 +1,101 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     org_schema_v1.html — ㈜감정평가법인 가치앤같이 조직 구조화데이터 (JSON-LD)
+     v1 / 2026-09-15
+
+     ▶ 적용 위치와 방법은 snippets/org_schema_v1_적용법.md 를 먼저 읽으십시오.
+       (index.html 에 이미 JSON-LD 블록이 있으므로 단순 추가하면 @id 가 충돌합니다.
+        기존 ProfessionalService / RealEstateAgent 노드를 이 블록으로 "교체"합니다.)
+
+     ▶ 아래 <script> 안의 JSON 은 주석 없이 그대로 유효합니다. 수정 없이 붙여넣어도
+       구조화데이터 검사를 통과합니다.
+
+     ══════════════════════════════════════════════════════════════════════════
+     ⚠ 사용자가 직접 채워야 하는 값 — sameAs (현재 의도적으로 생략됨)
+     ══════════════════════════════════════════════════════════════════════════
+     아래 채널의 "실제 URL 을 직접 확인한 뒤"에만 sameAs 를 추가하십시오.
+     추측한 URL 을 넣으면 오히려 신뢰도가 떨어집니다. 채널이 없으면 생략이 정답입니다.
+
+       1) 네이버 플레이스(네이버 지도 업체 페이지) URL   ← 미확인
+       2) 카카오맵 업체 페이지 URL                        ← 미확인
+       3) 유튜브 채널 URL                                 ← 미확인
+       4) (선택) 네이버 블로그 / 인스타그램 등            ← 미확인
+
+     추가 방법: 아래 JSON 에서 "founder" 객체가 끝나는 `}` 다음에 콤마를 찍고,
+     다음 내용을 그대로 이어 붙이십시오. 확인된 URL 만 남기고 나머지 줄은 삭제합니다.
+
+         ,
+         "sameAs": [
+           "https://map.naver.com/... (네이버 플레이스 URL 을 여기에)",
+           "https://place.map.kakao.com/... (카카오맵 URL 을 여기에)",
+           "https://www.youtube.com/@... (유튜브 채널 URL 을 여기에)"
+         ]
+
+     ※ 붙여넣은 뒤 반드시 https://search.google.com/test/rich-results 에서
+       JSON 파싱 오류가 없는지 확인하십시오.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://gaachi.co.kr/#organization",
+      "name": "㈜감정평가법인 가치앤같이",
+      "alternateName": "가치앤같이 감정평가법인",
+      "url": "https://gaachi.co.kr",
+      "telephone": "+82-2-572-1900",
+      "faxNumber": "+82-2-572-1901",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "강남대로 86, 5층 501호 (양재동, 가람빌딩)",
+        "addressLocality": "서초구",
+        "addressRegion": "서울특별시",
+        "addressCountry": "KR"
+      },
+      "priceRange": "₩₩",
+      "description": "상속재산·증여세 신고용 감정평가, 세무서 제출용 시가인정액, 취득세 시가인정액, 특수관계인 거래, 법원 촉탁, 담보·경매, 공익사업 보상, 재개발 종전자산, 무형자산 및 기계기구 감정평가를 수행하는 감정평가법인입니다.",
+      "areaServed": [
+        { "@type": "AdministrativeArea", "name": "서울특별시" },
+        { "@type": "AdministrativeArea", "name": "경기도" },
+        { "@type": "Country", "name": "대한민국" }
+      ],
+      "knowsAbout": [
+        "상속재산 감정평가",
+        "증여세 감정평가",
+        "세무서 제출용 시가인정액",
+        "취득세 시가인정액",
+        "특수관계인 거래 감정평가",
+        "법원 촉탁 감정평가",
+        "담보 감정평가",
+        "경매 감정평가",
+        "공익사업 보상평가",
+        "재개발 종전자산 감정평가",
+        "영업권·상표권 등 무형자산 감정평가",
+        "기계기구 감정평가"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "telephone": "+82-2-572-1900",
+        "url": "https://gaachi.co.kr/#contact",
+        "availableLanguage": ["ko"]
+      },
+      "founder": {
+        "@type": "Person",
+        "name": "김지광",
+        "jobTitle": "대표"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://gaachi.co.kr/#website",
+      "url": "https://gaachi.co.kr",
+      "name": "㈜감정평가법인 가치앤같이",
+      "alternateName": "가치앤같이 감정평가법인",
+      "description": "감정평가 사례와 목적별 감정평가 실무 정보를 공개하는 ㈜감정평가법인 가치앤같이 공식 홈페이지.",
+      "inLanguage": "ko",
+      "publisher": { "@id": "https://gaachi.co.kr/#organization" }
+    }
+  ]
+}
+</script>

@@ -977,4 +977,76 @@ window.addEventListener('scroll', () => {
   navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
 }, { passive: true });
 function filterCases(cat, btn) {
-  document.
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const cards = document.querySelectorAll('.case-card');
+  let visible = 0;
+  cards.forEach(card => {
+    if (cat === '전체' || card.dataset.cat === cat) { card.classList.remove('hidden'); visible++; }
+    else { card.classList.add('hidden'); }
+  });
+  document.getElementById('noResult').classList.toggle('show', visible === 0);
+}
+function openModal(id) { document.getElementById('modal-' + id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeModal(id) { document.getElementById('modal-' + id).classList.remove('open'); document.body.style.overflow = ''; }
+function closeModalOutside(e) { if (e.target.classList.contains('modal-overlay')) { e.target.classList.remove('open'); document.body.style.overflow = ''; } }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { document.querySelectorAll('.modal-overlay.open').forEach(m => { m.classList.remove('open'); document.body.style.overflow = ''; }); }
+});
+function sendEmail(e) {
+  e.preventDefault();
+  const name = document.getElementById('contact-name')?.value || '';
+  const tel = document.getElementById('contact-tel')?.value || '';
+  const email = document.getElementById('contact-email')?.value || '';
+  const type = document.getElementById('contact-type')?.value || '';
+  const msg = document.getElementById('contact-msg')?.value || '';
+
+  if (!name || !tel || !type) {
+    alert('성함, 연락처, 평가 유형은 필수 입력 항목입니다.');
+    return;
+  }
+
+  const btn = document.querySelector('.form-submit');
+  btn.textContent = '전송 중...';
+  btn.disabled = true;
+
+  const formData = {
+    access_key: '4f2f7303-fa8b-480e-8d5c-70b6c70ae382',
+    subject: '[가치앤같이] 감정평가 문의: ' + type,
+    from_name: name,
+    성함: name,
+    연락처: tel,
+    이메일: email,
+    평가유형: type,
+    문의내용: msg
+  };
+
+  fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData)
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert('문의가 성공적으로 접수되었습니다. 빠르게 연락드리겠습니다.');
+        document.getElementById('contact-name').value = '';
+        document.getElementById('contact-tel').value = '';
+        document.getElementById('contact-email').value = '';
+        document.getElementById('contact-type').value = '';
+        document.getElementById('contact-msg').value = '';
+      } else {
+        alert('전송 중 오류가 발생했습니다. 이메일로 직접 문의해 주세요.');
+      }
+    })
+    .catch(() => {
+      alert('전송 중 오류가 발생했습니다. 이메일로 직접 문의해 주세요.');
+    })
+    .finally(() => {
+      btn.textContent = '문의하기 →';
+      btn.disabled = false;
+    });
+}
+</script>
+</body>
+</html>

@@ -15,8 +15,7 @@ import os
 # 설정: 색인 요청할 URL 목록 (매번 여기에 추가)
 # ============================================================
 URLS_TO_INDEX = [
-    "https://gaachi.co.kr/cases/dongjak-daebang-epyeonhansesang-2026.html",
-    "https://gaachi.co.kr/cases/gangdong-seongnae-2025.html",
+    "https://gaachi.co.kr/cases/gangseo-magok-2026.html",
     # 다음 작업 시 아래에 URL 추가:
     # "https://gaachi.co.kr/cases/다음-파일명.html",
 ]

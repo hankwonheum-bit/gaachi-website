@@ -11,7 +11,10 @@ IndexNow 통보 순서로 하루 1건만 게시한다.
  - 기존 콘텐츠 파일은 절대 삭제/덮어쓰기 하지 않는다.
  - index.html / sitemap.xml 수정 전 타임스탬프 .bak 백업을 먼저 만든다.
  - cases/ 안에 동일 파일이 있으면 -v2, -v3 로 새 파일을 만든다.
+   (단, 직전 실행이 커밋 전에 실패해서 남긴 파일이면 -v2 를 만들지 않고 재사용한다.)
  - 같은 날 두 번 실행해도 안전하다(멱등).
+ - 커밋이 이뤄지지 않으면 대기열(queue/) 파일을 소비하지 않는다.
+   '스테이지된 변경 없음' 은 절대로 성공으로 처리하지 않는다(STAGE_FAILED).
 
 사용법
   python publish_case_v1.py            # 실제 게시
@@ -27,6 +30,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 from datetime import datetime, timedelta, timezone
 
 # find_git_v1.py 는 같은 폴더에 있다. 작업 스케줄러가 다른 작업 폴더에서
@@ -179,6 +183,121 @@ def git(args, check=False):
     if check and p.returncode != 0:
         raise RuntimeError("git %s 실패: %s" % (" ".join(args), out))
     return p.returncode, out
+
+
+# ------------------------------------------------------- git 잠금 파일(index.lock)
+# 이전 git 프로세스가 비정상 종료하면 .git/index.lock 이 0바이트로 남는다.
+# 그 상태에서는 'git add' 가 전부
+#   fatal: Unable to create '....git/index.lock': File exists.
+# 로 실패하는데, 예전 코드는 반환값을 보지 않아서 "스테이지된 변경이 없음" 으로
+# 읽고 그대로 '완료' 로 끝냈다. 대기열 파일은 이미 소비된 뒤라 사례가 통째로
+# 사라지는, 무인 실행에서 가장 나쁜 실패였다. 그래서 git 작업 전에 반드시 이
+# 잠금 파일을 먼저 정리하고, 정리하지 못하면 아예 시작하지 않는다.
+GIT_LOCK_STALE_SEC = 300      # 5분보다 오래됐으면 '죽은 잠금' 으로 본다
+GIT_LOCK_WAIT_SEC = 3         # 최근 잠금이면 잠깐 기다려 본다
+GIT_LOCK_RETRIES = 2          # 기다렸다가 다시 확인하는 횟수
+
+
+class GitLockError(RuntimeError):
+    """.git/index.lock 을 지우지 못해 게시를 시작할 수 없을 때."""
+
+
+def git_dir():
+    """REPO 의 .git 경로. (.git 이 'gitdir: …' 파일인 경우도 처리)"""
+    p = os.path.join(REPO, ".git")
+    if os.path.isfile(p):
+        try:
+            txt = read_text(p).strip()
+        except Exception:
+            return p
+        if txt.startswith("gitdir:"):
+            g = txt.split(":", 1)[1].strip()
+            if not os.path.isabs(g):
+                g = os.path.normpath(os.path.join(REPO, g))
+            return g
+    return p
+
+
+def git_lock_path():
+    return os.path.join(git_dir(), "index.lock")
+
+
+def _git_process_running():
+    """git 프로세스가 돌고 있을 '가능성' 만 본다. 확인 못 하면 False(없다고 본다)."""
+    try:
+        if os.name == "nt":
+            p = subprocess.run(["tasklist", "/FI", "IMAGENAME eq git.exe", "/NH"],
+                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                               timeout=15)
+            return "git.exe" in p.stdout.decode("utf-8", "replace").lower()
+        p = subprocess.run(["pgrep", "-x", "git"], stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT, timeout=15)
+        return p.returncode == 0
+    except Exception:
+        return False
+
+
+def _remove_git_lock(lock):
+    """잠금 파일 '하나' 만 지운다. .git 하위의 다른 것은 절대 건드리지 않는다."""
+    if os.path.basename(lock) != "index.lock":
+        raise GitLockError("안전장치: index.lock 이 아닌 파일은 지우지 않습니다: %s" % lock)
+    os.remove(lock)   # 실패하면 OSError 가 그대로 올라간다
+
+
+def _lock_manual_hint():
+    return ("git 잠금 파일(.git\\index.lock)을 지우지 못했습니다. 게시를 중단합니다. "
+            "파일 탐색기에서 %s 폴더를 열고 .git\\index.lock 파일을 삭제한 뒤 다시 "
+            "실행해 주세요. (명령 프롬프트에서는 cd /d \"%s\" 후 del .git\\index.lock) "
+            "— .git 폴더가 보이지 않으면 탐색기의 '보기 > 숨긴 항목' 을 켜세요."
+            % (REPO, REPO))
+
+
+def clear_stale_git_lock(dry=False):
+    """git 작업 전에 남아 있는 .git/index.lock 을 정리한다.
+    - 5분보다 오래됐고 git 프로세스가 없어 보이면 바로 제거
+    - 최근 파일이면 몇 초 기다렸다가, 그래도 남아 있으면 제거
+    - 제거에 실패하면 GitLockError 를 올린다(조용히 진행하지 않는다)
+    반환: 제거했으면 True, 잠금이 없었으면 False"""
+    lock = git_lock_path()
+    if not os.path.exists(lock):
+        return False
+
+    age = 0.0
+    for attempt in range(GIT_LOCK_RETRIES + 1):
+        try:
+            age = time.time() - os.path.getmtime(lock)
+        except OSError:
+            log("git 잠금 파일이 사라졌습니다. 정상 진행합니다.")
+            return False
+        running = _git_process_running()
+        if age >= GIT_LOCK_STALE_SEC and not running:
+            break                      # 확실한 '죽은 잠금'
+        if attempt >= GIT_LOCK_RETRIES:
+            log("경고: git 잠금 파일이 %d초 전에 만들어졌지만%s 계속 남아 있어 "
+                "제거를 시도합니다." % (int(age),
+                                      " git 프로세스가 보이고" if running else ""))
+            break
+        log("git 잠금 파일(.git/index.lock)이 있습니다(%d초 전 생성%s). "
+            "%d초 기다렸다가 다시 확인합니다."
+            % (int(age), ", git 프로세스 실행 중으로 보임" if running else "",
+               GIT_LOCK_WAIT_SEC))
+        time.sleep(GIT_LOCK_WAIT_SEC)
+        if not os.path.exists(lock):
+            log("git 잠금 파일이 스스로 사라졌습니다. 정상 진행합니다.")
+            return False
+
+    if dry:
+        log("[DRY] 오래된 git 잠금 파일(.git/index.lock) 제거 예정 (생성 %d초 전)" % int(age))
+        return True
+    try:
+        _remove_git_lock(lock)
+    except GitLockError:
+        raise
+    except OSError as e:
+        log("오류: git 잠금 파일을 지우지 못했습니다: %s" % e)
+        raise GitLockError(_lock_manual_hint())
+    log("오래된 git 잠금 파일(.git/index.lock)을 제거했습니다 (생성 %d초 전)." % int(age))
+    return True
 
 
 # ---------------------------------------------------------------- 게시 로그
@@ -477,13 +596,18 @@ def _sub_footer_update(html, iso, label, changes):
         re.I | re.S)
     tp = re.compile(r'(<time\b[^>]*\bdatetime=["\'])%s(["\'][^>]*>)[^<]*(</time>)'
                     % _ISO, re.I)
+    hits = [0]
 
     def fix(block):
-        return tp.sub(
+        new, n = tp.subn(
             lambda m: m.group(1) + iso + m.group(2) + kr_date(iso) + m.group(3),
             block, count=1)
+        hits[0] += n
+        return new
 
-    return _splice(html, pat, fix, label, changes)
+    html, _ = _splice(html, pat, fix, label, changes)
+    # div 자체가 아니라 '실제로 날짜를 찍을 수 있는 <time>' 의 개수를 돌려준다.
+    return html, hits[0]
 
 
 def extract_published_date(html):
@@ -530,7 +654,12 @@ def find_previous_published_date(cases_dir, base_slug, final_slug):
 
 def stamp_publish_dates(html, pub_iso, mod_iso):
     """게시일=pub_iso, 최종 업데이트=mod_iso 로 다시 찍는다.
-    반환: (새 html, [(라벨, 이전, 이후)…], [경고…])"""
+    반환: (새 html, [(라벨, 이전, 이후)…], [경고…], 앵커를 찾은 곳 수)
+
+    ※ '찾은 곳(matches)' 과 '바뀐 곳(changes)' 은 다른 값이다.
+       초안 날짜가 이미 오늘이면 앵커는 다 있는데 바뀐 곳은 0이 된다.
+       예전 코드는 changes 만 세어서 그때마다 '날짜 표기를 한 곳도 찾지 못했습니다'
+       라는 틀린 경고를 냈다. 그래서 matches 를 따로 돌려준다."""
     changes, warns = [], []
 
     html, n_pub_vis = _sub_time_by_class(html, "publish-date", pub_iso,
@@ -565,7 +694,9 @@ def stamp_publish_dates(html, pub_iso, mod_iso):
     if n_jp == 0 or n_jm == 0:
         warns.append("JSON-LD datePublished / dateModified 중 일부가 없습니다 "
                      "(datePublished %d건, dateModified %d건)." % (n_jp, n_jm))
-    return html, changes, warns
+    matches = (n_pub_vis + n_mod_vis + n_foot + n_op + n_om
+               + n_ip + n_im + n_jp + n_jm)
+    return html, changes, warns, matches
 
 
 # ---------------------------------------------------------------- sitemap
@@ -740,9 +871,37 @@ def ensure_indexnow_keyfile(dry=False):
 
 
 # ---------------------------------------------------------------- git
-def git_publish(paths, msg, no_push=False, dry=False):
+def staged_paths():
+    """현재 인덱스에 스테이지된 경로 목록. 명령 자체가 실패하면 (None, 출력)."""
+    rc, out = git(["diff", "--cached", "--name-only"])
+    if rc != 0:
+        return None, out
+    names = []
+    for ln in out.splitlines():
+        ln = ln.strip().strip('"')
+        if ln:
+            names.append(ln.replace("\\", "/"))
+    return names, out
+
+
+def _is_staged(staged, rel):
+    """rel(파일 또는 폴더)이 스테이지 목록 안에 있는가."""
+    rel = rel.replace("\\", "/").rstrip("/")
+    for s in staged:
+        if s == rel or s.startswith(rel + "/"):
+            return True
+    return False
+
+
+def git_publish(paths, msg, no_push=False, dry=False, expect=None):
     """반환: (commit_sha, result)
-    result in {OK, PUSH_FAIL, NO_CHANGE, COMMIT_FAIL, GIT_NOT_FOUND}"""
+    result in {OK, PUSH_FAIL, NO_CHANGE, STAGE_FAILED, COMMIT_FAIL, GIT_NOT_FOUND}
+
+    expect: 이번 실행에서 실제로 만들거나 고친 파일들(저장소 기준 상대경로).
+            git add 이후 'git diff --cached --name-only' 로 정말 스테이지됐는지
+            확인하고, 하나라도 빠지면 STAGE_FAILED 로 끝낸다.
+            expect 가 비어 있을 때만 '스테이지된 변경 없음' 이 진짜 NO_CHANGE 다."""
+    expect = list(expect or [])
     if dry:
         log("[DRY] git add: %s" % ", ".join(paths), dry)
         log("[DRY] git commit -m \"%s\"" % msg, dry)
@@ -760,19 +919,75 @@ def git_publish(paths, msg, no_push=False, dry=False):
             "설치하세요. 설치 방법: automation\\git_설치안내_v1.txt")
         return "-", "GIT_NOT_FOUND"
 
+    # 실행 도중(검증~파일 작성 사이)에 새로 생긴 잠금 파일도 한 번 더 확인한다.
+    try:
+        clear_stale_git_lock(False)
+    except GitLockError as e:
+        log("오류: %s" % e)
+        return "-", "STAGE_FAILED"
+
+    # 1) git add — 반환값을 반드시 확인한다(예전 코드가 여기서 실패를 삼켰다).
+    add_fail = []
     for p in paths:
-        git(["add", "-A", "--", p])
-    rc, _ = git(["diff", "--cached", "--quiet"])
-    if rc == 0:
-        log("스테이지된 변경이 없어 커밋을 건너뜁니다.")
-        _, sha = git(["rev-parse", "--short", "HEAD"])
-        return sha, "NO_CHANGE"
+        rc, out = git(["add", "-A", "--", p])
+        if rc != 0:
+            add_fail.append(p)
+            log("오류: git add 실패 (%s) rc=%d: %s" % (p, rc, _squeeze(out, 300)))
+
+    # 2) 정말 인덱스에 올라갔는지 눈으로 확인한다.
+    staged, out = staged_paths()
+    if staged is None:
+        log("오류: 'git diff --cached --name-only' 실행 실패: %s" % _squeeze(out, 300))
+        log("!!! 인덱스 상태를 확인할 수 없어 커밋하지 않고 중단합니다. (STAGE_FAILED)")
+        return "-", "STAGE_FAILED"
+
+    missing = [p for p in expect if not _is_staged(staged, p)]
+
+    def _log_missing():
+        for p in missing:
+            log("오류: 스테이지되어야 할 파일이 인덱스에 없습니다: %s" % p)
+
+    if not staged:
+        # 스테이지가 비었을 때 '진짜 바뀐 게 없는 것(NO_CHANGE)' 과
+        # 'add 가 실패해서 비어 있는 것(STAGE_FAILED)' 을 반드시 구분한다.
+        # git 자신이 "차이 없음" 이라고 답할 때만 NO_CHANGE 다.
+        clean = False
+        if expect and not add_fail:
+            rc, out = git(["status", "--porcelain", "--"] + list(expect))
+            clean = (rc == 0 and not out.strip())
+        elif not expect and not add_fail:
+            clean = True
+        if not clean:
+            _log_missing()
+            log("!!! 치명적: 이번 실행에서 파일을 만들거나 고쳤는데 git 인덱스에 올라간 "
+                "것이 하나도 없습니다. 커밋도 푸시도 이뤄지지 않았으므로 홈페이지에는 "
+                "아무것도 반영되지 않았습니다. (STAGE_FAILED)")
+            log("→ 가장 흔한 원인은 .git\\index.lock 이 남아 있는 경우입니다. "
+                "바로 위의 git add 오류 메시지를 확인하세요.")
+            return "-", "STAGE_FAILED"
+        # 여기만이 '진짜' NO_CHANGE 다: 대기열 원고가 이미 커밋된 내용과 같아서
+        # 새로 커밋할 것이 없다.
+        log("이미 커밋된 내용과 같아 커밋할 변경이 없습니다. (NO_CHANGE)")
+        rc, sha = git(["rev-parse", "--short", "HEAD"])
+        return (sha if rc == 0 else "-"), "NO_CHANGE"
+
+    if missing or add_fail:
+        _log_missing()
+        log("!!! 치명적: 일부 파일만 스테이지됐습니다. 반쪽짜리 커밋을 막기 위해 "
+            "커밋하지 않고 중단합니다. (STAGE_FAILED)")
+        return "-", "STAGE_FAILED"
+
+    log("스테이지 확인 완료 (%d개): %s%s"
+        % (len(staged), ", ".join(staged[:8]), " …" if len(staged) > 8 else ""))
 
     rc, out = git(["commit", "-m", msg])
     if rc != 0:
-        log("커밋 실패: %s" % out)
+        log("커밋 실패 rc=%d: %s" % (rc, out))
         return "-", "COMMIT_FAIL"
-    _, sha = git(["rev-parse", "--short", "HEAD"])
+    rc, sha = git(["rev-parse", "--short", "HEAD"])
+    if rc != 0:
+        log("경고: 커밋 후 HEAD 해시를 읽지 못했습니다: %s" % _squeeze(sha, 200))
+        sha = "-"
     log("커밋 완료 %s : %s" % (sha, msg))
 
     if no_push:
@@ -798,6 +1013,54 @@ def git_publish(paths, msg, no_push=False, dry=False):
     log("커밋은 로컬에 남겨 둡니다(리셋하지 않음). 수동 확인 필요.")
     log("→ " + MANUAL_PUSH_HINT)
     return sha, "PUSH_FAIL"
+
+
+# --------------------------------------------- 직전 실패 실행이 남긴 파일 재사용
+def _date_blind_signature(html):
+    """날짜 표기만 지운 본문 시그니처. 게시일 스탬핑 차이를 무시하고
+    '같은 원고인가' 만 본다."""
+    s = re.sub(_ISO, "@D@", html)
+    s = re.sub(r"\d{4}\s*년\s*\d{1,2}\s*월\s*\d{1,2}\s*일", "@D@", s)
+    s = re.sub(r"\d{4}\.\s*\d{1,2}\.\s*\d{1,2}\.?", "@D@", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def leftover_reason(rel_path, abs_path, draft_html):
+    """cases/<slug>.html 이 '직전 실행이 커밋 전에 실패해서 남긴 파일' 인가?
+
+    git 이 있으면 '인덱스에 없는 파일(=한 번도 커밋된 적 없음)' 인지로 판단한다.
+    이게 가장 확실하다. 커밋된 파일이면 진짜 기존 사례이므로 -v2 로 넘어간다.
+    git 이 없을 때만 날짜를 뺀 본문 비교로 대신 판단한다.
+    반환: 재사용해도 되면 사유 문자열, 아니면 ''"""
+    rel = rel_path.replace("\\", "/")
+    if GIT_EXE:
+        rc, _ = git(["ls-files", "--error-unmatch", "--", rel])
+        if rc != 0:
+            return "git 에 한 번도 커밋된 적이 없는 파일(직전 실행이 커밋 전에 중단됨)"
+        return ""
+    try:
+        same = (_date_blind_signature(read_text(abs_path))
+                == _date_blind_signature(draft_html))
+    except Exception:
+        same = False
+    if same:
+        return "대기열 원고와 (날짜를 빼고) 내용이 같은 파일"
+    return ""
+
+
+def undo_moves(pairs):
+    """커밋이 이뤄지지 않았을 때 대기열 파일을 queue/ 로 되돌린다."""
+    for src, dst in reversed(pairs):
+        try:
+            if os.path.exists(dst) and not os.path.exists(src):
+                shutil.move(dst, src)
+                log("커밋되지 않았으므로 대기열 파일을 되돌렸습니다: "
+                    "published/%s -> queue/%s"
+                    % (os.path.basename(dst), os.path.basename(src)))
+        except Exception as e:
+            log("경고: 대기열 파일을 되돌리지 못했습니다(%s -> %s): %s" % (dst, src, e))
+            log("→ automation\\published\\%s 를 automation\\queue\\ 로 직접 옮겨 "
+                "주세요. 그래야 다음 실행에서 다시 게시합니다." % os.path.basename(dst))
 
 
 # ---------------------------------------------------------------- main
@@ -847,6 +1110,18 @@ def main():
     qpath = os.path.join(args.queue_dir, qname)
     log("대상 파일: %s" % qname)
 
+    # 2.5) git 잠금 파일 정리 — 아무것도 쓰기 전에 먼저 한다.
+    #      여기서 못 지우면 뒤의 git add 가 전부 실패하므로 시작조차 하지 않는다.
+    try:
+        clear_stale_git_lock(dry)
+    except GitLockError as e:
+        log("오류: %s" % e)
+        log("대기열 파일(%s)은 queue/ 에 그대로 두었습니다. 잠금 파일을 지운 뒤 "
+            "다시 실행하면 이어서 게시합니다." % qname)
+        append_log_row(today_dash(), qname, "-", "-", "GIT_LOCK_STUCK", dry)
+        log("==== 실패: git 잠금 파일 때문에 시작하지 못했습니다 (GIT_LOCK_STUCK) ====")
+        return 1
+
     # 3) slug 도출 (NNN_slug.html -> slug)
     stem = os.path.splitext(qname)[0]
     base_slug = stem.split("_", 1)[1] if re.match(r"^\d+_", stem) else stem
@@ -874,12 +1149,23 @@ def main():
     log("검증 통과 (오류 0건, 경고 %d건)" % len(warns))
 
     # 5) 최종 slug 결정 (덮어쓰기 금지 -> -v2, -v3 …)
+    #    예외: 직전 실행이 커밋 전에 실패해서 남긴 파일이라면 -v2 를 만들지 않고
+    #          그 파일을 그대로 다시 쓴다. (재실행 멱등성)
     cases_dir = os.path.join(REPO, "cases")
     final_slug = base_slug
+    reuse_why = ""
     v = 1
     while os.path.exists(os.path.join(cases_dir, final_slug + ".html")):
+        reuse_why = leftover_reason("cases/%s.html" % final_slug,
+                                    os.path.join(cases_dir, final_slug + ".html"),
+                                    html)
+        if reuse_why:
+            break
         v += 1
         final_slug = "%s-v%d" % (base_slug, v)
+    if reuse_why:
+        log("cases/%s.html 이 이미 있지만 %s 이므로, 새 버전(-v%d)을 만들지 않고 "
+            "그 파일을 다시 씁니다." % (final_slug, reuse_why, v + 1))
     if final_slug != base_slug:
         log("cases/%s.html 이 이미 있어 %s 로 버전업합니다." % (base_slug, final_slug))
         html = html.replace("%s/cases/%s.html" % (SITE, base_slug),
@@ -902,7 +1188,8 @@ def main():
         else:
             log("경고: 기존 페이지에서 게시일을 읽지 못했습니다. "
                 "게시일·최종 업데이트 모두 오늘(%s)로 찍습니다." % today_iso)
-    html, date_changes, date_warns = stamp_publish_dates(html, pub_iso, today_iso)
+    html, date_changes, date_warns, date_hits = stamp_publish_dates(
+        html, pub_iso, today_iso)
     for w in date_warns:
         log("경고: %s" % w)
     if date_changes:
@@ -912,15 +1199,25 @@ def main():
             log("  · %s" % label)
             log("      이전: %s" % _squeeze(before))
             log("      이후: %s" % _squeeze(after))
+    elif date_hits:
+        # 앵커는 다 있는데 바꿀 게 없었던 경우 = 초안 날짜가 이미 오늘이다.
+        # 이건 정상이므로 경고가 아니다.
+        log("게시일·최종 업데이트가 이미 오늘 날짜입니다 (앵커 %d곳 확인). "
+            "바꿀 내용이 없어 그대로 둡니다." % date_hits)
     else:
-        log("경고: 갱신할 날짜 표기를 한 곳도 찾지 못했습니다. 게시일 스탬핑을 건너뜁니다.")
+        log("경고: 갱신할 날짜 표기(앵커)를 한 곳도 찾지 못했습니다. "
+            "게시일 스탬핑을 건너뜁니다.")
 
     # 6) cases/ 로 복사 (이동 아님)
+    #    expect = 이번 실행에서 실제로 만들거나 고친 파일. git add 뒤에
+    #    정말 스테이지됐는지 이 목록으로 확인한다.
+    expect = []
     if dry:
         log("[DRY] 복사 예정: %s -> cases/%s.html" % (qname, final_slug))
     else:
         os.makedirs(cases_dir, exist_ok=True)
         write_text(dst, html)
+        expect.append("cases/%s.html" % final_slug)
         log("사례 페이지 생성: cases/%s.html" % final_slug)
 
     # 7) 메타 로드
@@ -936,7 +1233,8 @@ def main():
     # 8) sitemap.xml
     sm = os.path.join(REPO, "sitemap.xml")
     try:
-        update_sitemap(sm, url, dry)
+        if update_sitemap(sm, url, dry) and not dry:
+            expect.append("sitemap.xml")
     except Exception as e:
         log("경고: sitemap.xml 갱신 실패: %s" % e)
 
@@ -948,25 +1246,32 @@ def main():
             num = next_case_num(read_text(idx))
         num = ("%02d" % int(num)) if str(num).isdigit() else str(num)
         card = build_card(meta, final_slug, num)
-        update_index(idx, card, final_slug, dry)
+        if update_index(idx, card, final_slug, dry) and not dry:
+            expect.append("index.html")
     except Exception as e:
         log("경고: index.html 카드 추가 실패(게시는 계속 진행): %s" % e)
         num = num or "00"
 
     # 10) 대기열 -> published
-    moved = os.path.join(PUBLISHED_DIR, qname)
+    #     커밋에 '큐에서 빠지고 published 로 들어간 사실' 까지 함께 담기도록
+    #     이동을 먼저 한다. 다만 커밋이 이뤄지지 않으면(undo_moves) 곧바로
+    #     queue/ 로 되돌려서, 대기열 항목이 커밋 없이 소비되는 일이 없게 한다.
+    move_pairs = []
     if dry:
         log("[DRY] 이동 예정: queue/%s -> published/%s" % (qname, qname))
     else:
+        moved = os.path.join(PUBLISHED_DIR, qname)
         if os.path.exists(moved):
             moved = os.path.join(PUBLISHED_DIR, "%s-%s" % (stamp(), qname))
         shutil.move(qpath, moved)
+        move_pairs.append((qpath, moved))
         if os.path.exists(mpath):
             mdst = os.path.join(PUBLISHED_DIR, os.path.basename(mpath))
             if os.path.exists(mdst):
                 mdst = os.path.join(PUBLISHED_DIR,
                                     "%s-%s" % (stamp(), os.path.basename(mpath)))
             shutil.move(mpath, mdst)
+            move_pairs.append((mpath, mdst))
         log("대기열 파일 이동: published/%s" % os.path.basename(moved))
 
     # 11) IndexNow 키 파일 확인
@@ -986,7 +1291,12 @@ def main():
              "automation/queue", "automation/published", "automation/state"]
     if keyfile:
         paths.append(os.path.basename(keyfile))
-    sha, result = git_publish(paths, msg, args.no_push, dry)
+    sha, result = git_publish(paths, msg, args.no_push, dry, expect=expect)
+
+    # 12.5) 커밋이 이뤄지지 않았으면 대기열 항목을 소비하지 않는다.
+    #       (다음 실행이 같은 파일을 다시 집어서 이어서 게시할 수 있게 한다)
+    if result in ("STAGE_FAILED", "COMMIT_FAIL"):
+        undo_moves(move_pairs)
 
     # 13) IndexNow 통보 (push 성공 시에만)
     if result == "OK":
@@ -1003,10 +1313,20 @@ def main():
     if result == "GIT_NOT_FOUND":
         log("==== 완료(로컬 준비까지): %s ====" % url)
         log("★ 홈페이지에 올리려면: " + MANUAL_PUSH_HINT)
+    elif result in ("STAGE_FAILED", "COMMIT_FAIL"):
+        log("==== 실패: %s (%s) — 홈페이지에 아무것도 반영되지 않았습니다 ===="
+            % (url, result))
+        log("★ 대기열 파일(%s)은 queue/ 에 그대로 있습니다. 원인을 고친 뒤 다시 "
+            "실행하면 같은 사례를 이어서 게시합니다." % qname)
+        if not dry:
+            log("★ cases/%s.html 은 만들어진 채로 남아 있지만 커밋되지 않았습니다. "
+                "다음 실행에서 -v2 를 새로 만들지 않고 이 파일을 다시 씁니다."
+                % final_slug)
     else:
         log("==== 완료: %s (%s) ====" % (url, result))
 
     # GIT_NOT_FOUND 는 오류가 아니다. 수동 Push 로 복구 가능하므로 0 으로 끝낸다.
+    # STAGE_FAILED / COMMIT_FAIL / PUSH_FAIL 은 반드시 0 이 아닌 값으로 끝낸다.
     return 0 if result in ("OK", "NO_CHANGE", "GIT_NOT_FOUND") else 1
 
 

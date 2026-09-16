@@ -29,6 +29,15 @@ import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
 
+# find_git_v1.py 는 같은 폴더에 있다. 작업 스케줄러가 다른 작업 폴더에서
+# 호출해도 확실히 import 되도록 스크립트 폴더를 sys.path 에 먼저 넣는다.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    from find_git_v1 import find_git_with_source
+except Exception:  # 탐색기 파일이 없어도 본체는 죽지 않는다
+    def find_git_with_source():
+        return None, None
+
 # ---------------------------------------------------------------- 기본 설정
 KST = timezone(timedelta(hours=9))
 SITE = "https://gaachi.co.kr"
@@ -62,6 +71,16 @@ FIRM_LINE = ('          <p>감정평가법인: 가치앤같이 감정평가법�
 TEL_LINE = '          <p>문의: (02) 572-1900</p>'
 
 _RUNLOG = []
+
+# 시작할 때 1회만 해석해서 재사용하는 git 실행 파일 경로. None 이면 git 없음.
+GIT_EXE = None
+GIT_SRC = None
+
+# git 을 못 찾았을 때 게시 로그 result 칸과 실행 로그에 남기는 안내 문구.
+# TSV 이므로 탭 문자를 넣지 않는다.
+MANUAL_PUSH_HINT = ("GitHub Desktop 을 열고 Push 를 눌러 주시면 그때 홈페이지에 반영됩니다.")
+GIT_NOT_FOUND_RESULT = ("GIT_NOT_FOUND / 페이지는 내 컴퓨터에 준비 완료 — "
+                        "아직 홈페이지에 게시되지 않았습니다. " + MANUAL_PUSH_HINT)
 
 
 # ---------------------------------------------------------------- 유틸
@@ -132,8 +151,29 @@ def backup(path, dry=False):
     return bak
 
 
+def resolve_git():
+    """git 실행 파일을 1회만 해석해서 전역에 보관한다. 반환: 경로 또는 None"""
+    global GIT_EXE, GIT_SRC
+    GIT_EXE, GIT_SRC = find_git_with_source()
+    if GIT_EXE:
+        log("git 실행 파일: %s (출처: %s)" % (GIT_EXE, GIT_SRC))
+        if GIT_SRC == "GitHubDesktop":
+            log("주의: GitHub Desktop 내장 git 을 사용합니다. GitHub Desktop 을 "
+                "업데이트하면 경로가 바뀔 수 있으니 Git for Windows 설치를 권장합니다 "
+                "(https://git-scm.com/download/win).")
+    else:
+        log("GIT_NOT_FOUND — git 실행 파일을 찾지 못했습니다.")
+    return GIT_EXE
+
+
 def git(args, check=False):
-    p = subprocess.run(["git"] + args, cwd=REPO, stdout=subprocess.PIPE,
+    """해석된 git 실행 파일로 명령을 돌린다. git 이 없으면 (-1, 안내문)."""
+    if not GIT_EXE:
+        msg = "GIT_NOT_FOUND: git 실행 파일이 없어 'git %s' 를 건너뜁니다." % " ".join(args)
+        if check:
+            raise RuntimeError(msg)
+        return -1, msg
+    p = subprocess.run([GIT_EXE] + args, cwd=REPO, stdout=subprocess.PIPE,
                        stderr=subprocess.STDOUT)
     out = p.stdout.decode("utf-8", "replace").strip()
     if check and p.returncode != 0:
@@ -329,6 +369,205 @@ def derive_meta_from_html(html):
     return out
 
 
+# ---------------------------------------------------------------- 게시일 스탬핑
+# 초안(draft)은 "작성한 날"의 날짜를 박은 채로 검토 큐에서 며칠씩 대기할 수 있다.
+# 실제로 cases/ 에 올라가는 순간의 KST 날짜로, "웹페이지에 대한 날짜"만 다시 찍는다.
+# (프레시니스는 AI 인용과 가장 강하게 붙는 지표이므로 초안 작성일이 아니라
+#  실제 게시일이 찍혀 있어야 한다.)
+#
+# ▷ 다시 찍는 대상 = 웹페이지에 대한 사실
+#   1) <time class="publish-date"  datetime="...">…</time>   보이는 게시일
+#   2) <time class="modified-date" datetime="...">…</time>   보이는 최종 업데이트
+#   3) <meta property="article:published_time" content="...">
+#   4) <meta property="article:modified_time"  content="...">
+#   5) JSON-LD "datePublished" / "dateModified"
+#   6) <meta itemprop="datePublished|dateModified" content="...">  (v3 Article 마이크로데이터)
+#   7) <div class="footer-update"> … <time datetime="...">…</time>
+#      (v3 템플릿에서 실제로 "보이는 최종 업데이트"는 여기 하나뿐이다)
+#
+# ▷ 절대 건드리지 않는 것 = 감정평가 업무에 대한 사실
+#   - 감정평가서 작성일 : <time class="report-date" …> 또는 v3 의 .case-byline /
+#                         "감정평가서 작성일" info-item 안의 <time datetime="YYYY-MM-DD">
+#   - 기준시점 / 거래시점 : <time datetime="YYYY">YYYY년</time>
+#   아래 치환은 모두 위 7개 앵커(클래스명·meta 속성명·JSON-LD 키)에만 붙는다.
+#   앵커가 없는 <time> 은 하나도 건드리지 않으므로 작성일·기준시점은 그대로 남는다.
+
+_ISO = r"\d{4}-\d{2}-\d{2}"
+
+
+def kr_date(iso):
+    """'2026-09-16' -> '2026년 9월 16일' (월·일에 0 채우지 않음)"""
+    y, m, d = iso.split("-")
+    return "%d년 %d월 %d일" % (int(y), int(m), int(d))
+
+
+def _squeeze(s, n=120):
+    s = re.sub(r"\s+", " ", s).strip()
+    return s if len(s) <= n else (s[:n] + "…")
+
+
+def _splice(html, pat, fix, label, changes):
+    """pat 에 걸린 조각을 fix() 결과로 바꾸고 (라벨, 이전, 이후) 를 기록한다."""
+    out, pos, n = [], 0, 0
+    for m in pat.finditer(html):
+        old = m.group(0)
+        new = fix(old)
+        if new != old:
+            changes.append((label, old, new))
+        out.append(html[pos:m.start()])
+        out.append(new)
+        pos = m.end()
+        n += 1
+    out.append(html[pos:])
+    return "".join(out), n
+
+
+def _sub_time_by_class(html, cls, iso, label, changes):
+    """<time class="…cls…" datetime="ISO">한글날짜</time> 의 datetime 과 본문을 함께 교체."""
+    pat = re.compile(
+        r'<time\b(?=[^>]*\bclass=["\'][^"\']*\b%s\b)[^>]*>[^<]*</time>'
+        % re.escape(cls), re.I)
+
+    def fix(tag):
+        t = re.sub(r'(\bdatetime=["\'])%s' % _ISO,
+                   lambda m: m.group(1) + iso, tag, count=1, flags=re.I)
+        t = re.sub(r'(>)[^<]*(</time>)',
+                   lambda m: m.group(1) + kr_date(iso) + m.group(2), t, count=1)
+        return t
+
+    return _splice(html, pat, fix, label, changes)
+
+
+def _meta_pat(attr, name):
+    return re.compile(r'<meta\b[^>]*\b%s=["\']%s["\'][^>]*>'
+                      % (attr, re.escape(name)), re.I)
+
+
+def _sub_meta_date(html, attr, name, iso, label, changes):
+    """<meta … content="YYYY-MM-DD[T…]"> 에서 날짜 부분만 교체(시각·오프셋은 보존)."""
+    def fix(tag):
+        return re.sub(r'(\bcontent=["\'])%s' % _ISO,
+                      lambda m: m.group(1) + iso, tag, count=1, flags=re.I)
+
+    return _splice(html, _meta_pat(attr, name), fix, label, changes)
+
+
+def _sub_jsonld_date(html, key, iso, label, changes):
+    """application/ld+json 블록 안의 "key": "YYYY-MM-DD" 만 교체."""
+    blk = re.compile(
+        r'<script\b[^>]*type=["\']application/ld\+json["\'][^>]*>.*?</script>',
+        re.I | re.S)
+    kp = re.compile(r'(["\']%s["\']\s*:\s*["\'])%s' % (re.escape(key), _ISO))
+    hits = [0]
+
+    def fix(block):
+        new, n = kp.subn(lambda m: m.group(1) + iso, block)
+        hits[0] += n
+        return new
+
+    html, _ = _splice(html, blk, fix, label, changes)
+    return html, hits[0]
+
+
+def _sub_footer_update(html, iso, label, changes):
+    """<div class="footer-update"> 안의 첫 <time datetime="ISO">…</time> 를 교체.
+    v3 템플릿에서 사람이 눈으로 보는 '최종 업데이트'가 바로 여기다."""
+    pat = re.compile(
+        r'<div\b[^>]*\bclass=["\'][^"\']*\bfooter-update\b[^"\']*["\'][^>]*>.*?</div>',
+        re.I | re.S)
+    tp = re.compile(r'(<time\b[^>]*\bdatetime=["\'])%s(["\'][^>]*>)[^<]*(</time>)'
+                    % _ISO, re.I)
+
+    def fix(block):
+        return tp.sub(
+            lambda m: m.group(1) + iso + m.group(2) + kr_date(iso) + m.group(3),
+            block, count=1)
+
+    return _splice(html, pat, fix, label, changes)
+
+
+def extract_published_date(html):
+    """이미 게시된 페이지에서 '기존 게시일(ISO)'을 읽는다. 못 찾으면 None."""
+    m = re.search(
+        r'<time\b(?=[^>]*\bclass=["\'][^"\']*\bpublish-date\b)[^>]*\bdatetime=["\'](%s)'
+        % _ISO, html, re.I)
+    if m:
+        return m.group(1)
+    for attr, name in (("property", "article:published_time"),
+                       ("itemprop", "datePublished")):
+        mt = _meta_pat(attr, name).search(html)
+        if mt:
+            mc = re.search(r'\bcontent=["\'](%s)' % _ISO, mt.group(0), re.I)
+            if mc:
+                return mc.group(1)
+    m = re.search(r'["\']datePublished["\']\s*:\s*["\'](%s)' % _ISO, html)
+    if m:
+        return m.group(1)
+    return None
+
+
+def find_previous_published_date(cases_dir, base_slug, final_slug):
+    """재게시(-v2/-v3 …)일 때 원본 페이지의 게시일을 찾는다.
+    원본(base) 을 최우선으로, 실패하면 최신 이전 버전부터 거슬러 올라간다.
+    반환: (ISO 날짜 또는 None, 읽어 온 파일명 또는 None)"""
+    cands = [base_slug]
+    mv = re.match(r"^%s-v(\d+)$" % re.escape(base_slug), final_slug)
+    if mv:
+        cands += ["%s-v%d" % (base_slug, i) for i in range(int(mv.group(1)) - 1, 1, -1)]
+    for slug in cands:
+        p = os.path.join(cases_dir, slug + ".html")
+        if not os.path.exists(p):
+            continue
+        try:
+            iso = extract_published_date(read_text(p))
+        except Exception as e:
+            log("경고: 기존 페이지 %s.html 을 읽지 못했습니다: %s" % (slug, e))
+            continue
+        if iso:
+            return iso, slug + ".html"
+    return None, None
+
+
+def stamp_publish_dates(html, pub_iso, mod_iso):
+    """게시일=pub_iso, 최종 업데이트=mod_iso 로 다시 찍는다.
+    반환: (새 html, [(라벨, 이전, 이후)…], [경고…])"""
+    changes, warns = [], []
+
+    html, n_pub_vis = _sub_time_by_class(html, "publish-date", pub_iso,
+                                         "보이는 게시일(time.publish-date)", changes)
+    html, n_mod_vis = _sub_time_by_class(html, "modified-date", mod_iso,
+                                         "보이는 최종 업데이트(time.modified-date)", changes)
+    html, n_foot = _sub_footer_update(html, mod_iso,
+                                      "보이는 최종 업데이트(div.footer-update)", changes)
+    html, n_op = _sub_meta_date(html, "property", "article:published_time", pub_iso,
+                                "meta article:published_time", changes)
+    html, n_om = _sub_meta_date(html, "property", "article:modified_time", mod_iso,
+                                "meta article:modified_time", changes)
+    html, n_ip = _sub_meta_date(html, "itemprop", "datePublished", pub_iso,
+                                "meta itemprop=datePublished", changes)
+    html, n_im = _sub_meta_date(html, "itemprop", "dateModified", mod_iso,
+                                "meta itemprop=dateModified", changes)
+    html, n_jp = _sub_jsonld_date(html, "datePublished", pub_iso,
+                                  "JSON-LD datePublished", changes)
+    html, n_jm = _sub_jsonld_date(html, "dateModified", mod_iso,
+                                  "JSON-LD dateModified", changes)
+
+    if n_pub_vis == 0:
+        warns.append("페이지에 '보이는 게시일'(<time class=\"publish-date\">)이 없습니다. "
+                     "메타·JSON-LD 게시일만 찍었습니다. "
+                     "템플릿에 게시일 표시를 추가해야 독자와 크롤러가 눈으로 확인할 수 있습니다.")
+    if n_mod_vis == 0 and n_foot == 0:
+        warns.append("페이지에 '보이는 최종 업데이트' 표기가 없습니다"
+                     "(<time class=\"modified-date\"> / <div class=\"footer-update\"> 모두 없음).")
+    if n_op == 0 or n_om == 0:
+        warns.append("meta article:published_time / article:modified_time 중 일부가 없습니다 "
+                     "(published %d건, modified %d건)." % (n_op, n_om))
+    if n_jp == 0 or n_jm == 0:
+        warns.append("JSON-LD datePublished / dateModified 중 일부가 없습니다 "
+                     "(datePublished %d건, dateModified %d건)." % (n_jp, n_jm))
+    return html, changes, warns
+
+
 # ---------------------------------------------------------------- sitemap
 def update_sitemap(path, url, dry=False):
     xml = read_text(path)
@@ -502,12 +741,24 @@ def ensure_indexnow_keyfile(dry=False):
 
 # ---------------------------------------------------------------- git
 def git_publish(paths, msg, no_push=False, dry=False):
-    """반환: (commit_sha, result) result in {OK, PUSH_FAIL, NO_CHANGE}"""
+    """반환: (commit_sha, result)
+    result in {OK, PUSH_FAIL, NO_CHANGE, COMMIT_FAIL, GIT_NOT_FOUND}"""
     if dry:
         log("[DRY] git add: %s" % ", ".join(paths), dry)
         log("[DRY] git commit -m \"%s\"" % msg, dry)
         log("[DRY] git push origin main", dry)
         return "-", "OK"
+
+    # git 이 없어도 파일 준비(검증/복사/sitemap/index)는 이미 끝났다.
+    # 커밋/푸시만 건너뛰고, 사용자가 GitHub Desktop 으로 직접 Push 하게 안내한다.
+    if not GIT_EXE:
+        log("GIT_NOT_FOUND — git 실행 파일이 없어 커밋/푸시를 건너뜁니다.")
+        log("사례 페이지와 index.html, sitemap.xml 수정은 내 컴퓨터에 정상적으로 "
+            "준비되었습니다. 다만 아직 홈페이지에는 올라가지 않았습니다.")
+        log("→ " + MANUAL_PUSH_HINT)
+        log("→ 근본 해결: https://git-scm.com/download/win 에서 Git for Windows 를 "
+            "설치하세요. 설치 방법: automation\\git_설치안내_v1.txt")
+        return "-", "GIT_NOT_FOUND"
 
     for p in paths:
         git(["add", "-A", "--", p])
@@ -537,6 +788,7 @@ def git_publish(paths, msg, no_push=False, dry=False):
     if rc2 != 0:
         log("pull --rebase 실패: %s" % out2)
         log("커밋은 로컬에 남겨 둡니다(리셋하지 않음). 수동 확인 필요.")
+        log("→ " + MANUAL_PUSH_HINT)
         return sha, "PUSH_FAIL"
     rc3, out3 = git(["push", "origin", "main"])
     if rc3 == 0:
@@ -544,6 +796,7 @@ def git_publish(paths, msg, no_push=False, dry=False):
         return sha, "OK"
     log("재시도 push 실패: %s" % out3)
     log("커밋은 로컬에 남겨 둡니다(리셋하지 않음). 수동 확인 필요.")
+    log("→ " + MANUAL_PUSH_HINT)
     return sha, "PUSH_FAIL"
 
 
@@ -565,6 +818,9 @@ def main():
     log("==== 사례 자동 게시 시작 (KST %s)%s ===="
         % (now_kst().strftime("%Y-%m-%d %H:%M:%S"), " [DRY-RUN]" if dry else ""))
     log("저장소: %s" % REPO)
+
+    # git 실행 파일을 여기서 딱 1회 해석한다(없으면 None -> 커밋/푸시만 생략).
+    resolve_git()
 
     for d in (args.queue_dir, PUBLISHED_DIR, REJECTED_DIR, LOGS_DIR, STATE_DIR):
         if not dry:
@@ -632,6 +888,32 @@ def main():
                             "/cases/%s.html" % final_slug)
     url = "%s/cases/%s.html" % (SITE, final_slug)
     dst = os.path.join(cases_dir, final_slug + ".html")
+
+    # 5.5) 게시일 스탬핑 — 초안에 박힌 '작성한 날'이 아니라 '실제로 올라가는 날'을 찍는다.
+    #      감정평가서 작성일·기준시점은 건드리지 않는다.
+    today_iso = today_dash()
+    pub_iso = today_iso
+    if final_slug != base_slug:
+        prev_iso, prev_name = find_previous_published_date(cases_dir, base_slug, final_slug)
+        if prev_iso:
+            pub_iso = prev_iso
+            log("재게시: 게시일은 %s 의 기존 값 %s 을 유지하고, 최종 업데이트만 %s 로 찍습니다."
+                % (prev_name, prev_iso, today_iso))
+        else:
+            log("경고: 기존 페이지에서 게시일을 읽지 못했습니다. "
+                "게시일·최종 업데이트 모두 오늘(%s)로 찍습니다." % today_iso)
+    html, date_changes, date_warns = stamp_publish_dates(html, pub_iso, today_iso)
+    for w in date_warns:
+        log("경고: %s" % w)
+    if date_changes:
+        log("게시일 스탬핑 완료 — 게시일 %s / 최종 업데이트 %s (%d곳 갱신)"
+            % (pub_iso, today_iso, len(date_changes)))
+        for label, before, after in date_changes:
+            log("  · %s" % label)
+            log("      이전: %s" % _squeeze(before))
+            log("      이후: %s" % _squeeze(after))
+    else:
+        log("경고: 갱신할 날짜 표기를 한 곳도 찾지 못했습니다. 게시일 스탬핑을 건너뜁니다.")
 
     # 6) cases/ 로 복사 (이동 아님)
     if dry:
@@ -713,10 +995,19 @@ def main():
         log("push 성공이 아니므로 IndexNow 통보를 생략합니다. (result=%s)" % result)
 
     # 14) 게시 로그
-    append_log_row(today_dash(), qname, url, sha,
-                   "OK" if result == "OK" else result, dry)
-    log("==== 완료: %s (%s) ====" % (url, result))
-    return 0 if result in ("OK", "NO_CHANGE") else 1
+    #     git 이 없어 커밋/푸시를 못 한 경우에는, 나중에 로그만 봐도 무엇을
+    #     해야 하는지 알 수 있도록 result 칸에 한국어 안내를 그대로 적는다.
+    result_cell = GIT_NOT_FOUND_RESULT if result == "GIT_NOT_FOUND" else result
+    append_log_row(today_dash(), qname, url, sha, result_cell, dry)
+
+    if result == "GIT_NOT_FOUND":
+        log("==== 완료(로컬 준비까지): %s ====" % url)
+        log("★ 홈페이지에 올리려면: " + MANUAL_PUSH_HINT)
+    else:
+        log("==== 완료: %s (%s) ====" % (url, result))
+
+    # GIT_NOT_FOUND 는 오류가 아니다. 수동 Push 로 복구 가능하므로 0 으로 끝낸다.
+    return 0 if result in ("OK", "NO_CHANGE", "GIT_NOT_FOUND") else 1
 
 
 if __name__ == "__main__":

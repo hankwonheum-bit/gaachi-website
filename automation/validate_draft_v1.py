@@ -309,7 +309,7 @@ def draft_checks(html, html_path, base_slug, check_meta=True):
     canon = attr_href(html, r'<link[^>]+rel=["\']canonical["\'][^>]*>')
     ogurl = attr_href(html, r'<meta[^>]+property=["\']og:url["\'][^>]*>')
     meid = mainentity_id(html)
-    want = "%s/cases/%s.html" % (SITE, base_slug)
+    want = "%s/cases/%s" % (SITE, base_slug)
     trio = {"canonical": canon, "og:url": ogurl, "mainEntityOfPage.@id": meid}
     for k, v in trio.items():
         if not v:
@@ -364,10 +364,10 @@ def draft_checks(html, html_path, base_slug, check_meta=True):
     # 11) 참고 경고
     if not re.search(r'rel=["\']alternate["\'][^>]*application/rss\+xml', html, re.I):
         warns.append('<link rel="alternate" type="application/rss+xml" ...> 가 없습니다.')
-    for m in re.finditer(r'href=["\']/cases/([a-z0-9\-]+)\.html["\']', html):
+    for m in re.finditer(r'href=["\']/cases/([a-z0-9\-]+)(?:\.html)?["\']', html):
         p = os.path.join(REPO, "cases", m.group(1) + ".html")
         if not os.path.exists(p):
-            warns.append("관련 사례 링크 대상 파일이 없습니다: /cases/%s.html" % m.group(1))
+            warns.append("관련 사례 링크 대상 파일이 없습니다: /cases/%s" % m.group(1))
     firm = html.count("㈜감정평가법인 가치앤같이")
     if firm < 6:
         warns.append("법인 정식명칭 '㈜감정평가법인 가치앤같이' 가 %d회입니다(6회 이상 권장)." % firm)

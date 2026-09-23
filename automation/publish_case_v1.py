@@ -388,7 +388,7 @@ def validate(html, base_slug):
         errs.append('<link rel="canonical"> 태그가 없습니다.')
     else:
         hm = re.search(r'href=["\']([^"\']+)["\']', m.group(0))
-        want = "%s/cases/%s.html" % (SITE, base_slug)
+        want = "%s/cases/%s" % (SITE, base_slug)
         if not hm:
             errs.append("canonical 태그에 href가 없습니다.")
         elif hm.group(1).rstrip("/") != want:
@@ -756,9 +756,11 @@ def build_card(meta, slug, num):
     if not ps:
         ps = ["가치앤같이 감정평가법인이 수행한 %s %s 감정평가 사례입니다." % (t1, t2)]
     p_lines = "\n".join("          <p>%s</p>" % p for p in ps)
+    # 앵커 텍스트: 링크만 보고도 어떤 사례인지 알 수 있게 (AI/검색 신호)
+    anchor = ("%s %s" % (t1, t2)).replace("<br>", " ").strip()
 
     return (
-        '      <div class="case-card fade-up" data-cat="%s" onclick="location.href=\'/cases/%s.html\'">\n'
+        '      <div class="case-card fade-up" data-cat="%s" onclick="location.href=\'/cases/%s\'">\n'
         '        <div class="case-card-head">\n'
         '          <div class="case-num">%s</div>\n'
         '          <div class="case-tag">%s</div>\n'
@@ -776,17 +778,11 @@ def build_card(meta, slug, num):
         '            <div class="case-more">상세 보기 →</div>\n'
         '          </div>\n'
         '          <div class="case-date-badge">%s 업데이트</div>\n'
-        '        </div>\n'
-        '        <!-- SEO: 크롤러용 상세 내용 -->\n'
-        '        <div class="seo-content">\n'
-        '          <h2>%s</h2>\n'
-        '%s\n'
-        '%s\n'
-        '%s\n'
+        '          <a class="case-link" href="/cases/%s">%s 사례 자세히 보기</a>\n'
         '        </div>\n'
         '      </div>'
         % (cat, slug, num, tag, t1, t2, purpose, sijae, gijun, method,
-           value_text, today_dot(), seo_h2, p_lines, FIRM_LINE, TEL_LINE))
+           value_text, today_dot(), slug, anchor))
 
 
 def _balanced_block_end(html, start):
@@ -804,7 +800,7 @@ def _balanced_block_end(html, start):
 
 def update_index(path, card, slug, dry=False):
     html = read_text(path)
-    if "location.href='/cases/%s.html'" % slug in html:
+    if ('href="/cases/%s"' % slug) in html or ("location.href='/cases/%s.html'" % slug) in html:
         log("index.html 에 이미 동일 사례 카드가 있습니다. 건너뜁니다.")
         return False
     backup(path, dry)
@@ -1168,11 +1164,9 @@ def main():
             "그 파일을 다시 씁니다." % (final_slug, reuse_why, v + 1))
     if final_slug != base_slug:
         log("cases/%s.html 이 이미 있어 %s 로 버전업합니다." % (base_slug, final_slug))
-        html = html.replace("%s/cases/%s.html" % (SITE, base_slug),
-                            "%s/cases/%s.html" % (SITE, final_slug))
-        html = html.replace("/cases/%s.html" % base_slug,
-                            "/cases/%s.html" % final_slug)
-    url = "%s/cases/%s.html" % (SITE, final_slug)
+        html = re.sub(r'/cases/%s(?=["\'<\s])' % re.escape(base_slug),
+                      "/cases/%s" % final_slug, html)
+    url = "%s/cases/%s" % (SITE, final_slug)
     dst = os.path.join(cases_dir, final_slug + ".html")
 
     # 5.5) 게시일 스탬핑 — 초안에 박힌 '작성한 날'이 아니라 '실제로 올라가는 날'을 찍는다.

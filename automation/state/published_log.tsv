@@ -1,2 +1,6 @@
 date_kst	filename	url	commit_sha	result
 2026-09-16	001_gangnam-gaepo-hyundai-2025.html	https://gaachi.co.kr/cases/gangnam-gaepo-hyundai-2025.html	a916590	NO_CHANGE
+2026-09-23	003_songpa-bangi-olympicseonsu-sangsok-2025.html	https://gaachi.co.kr/cases/songpa-bangi-olympicseonsu-sangsok-2025	4916dc1	OK
+2026-09-23	004_gangnam-dogok-woosung-sangsok-2025.html	https://gaachi.co.kr/cases/gangnam-dogok-woosung-sangsok-2025	-	COMMIT_FAIL
+2026-09-23	004_gangnam-dogok-woosung-sangsok-2025.html	-	-	GIT_LOCK_STUCK
+2026-09-23	004_gangnam-dogok-woosung-sangsok-2025.html	https://gaachi.co.kr/cases/gangnam-dogok-woosung-sangsok-2025-v2	-	STAGE_FAILED

@@ -1,0 +1,9 @@
+# Cloudflare Pages 정적 배포 차단 규칙 (2026-09-30 신설)
+# 사유: automation/ 하위 내부 파일이 공개 서빙되어 사례 페이지에서 마스킹한
+#       지번·층·호·정확 금액이 그대로 열람 가능했음. 아래 경로는 404로 응답한다.
+# ※ IndexNow 키 파일(dbebde….txt)·robots.txt·sitemap.xml·feed.xml·llms.txt 는 차단하지 않는다.
+/automation/*   /404.html   404
+/templates/*    /404.html   404
+/CLAUDE.md      /404.html   404
+/gsc_index.py   /404.html   404
+/SEO_점검_v1.md  /404.html   404

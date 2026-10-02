@@ -8,3 +8,4 @@ date_kst	filename	url	commit_sha	result
 2026-09-28	009_yeongdeungpo-yeongdeungpo5ga-jaepyeongga-2024.html	https://gaachi.co.kr/cases/yeongdeungpo-yeongdeungpo5ga-jaepyeongga-2024	6fadbfa	OK
 2026-09-29	010_geumcheon-gasandong-officetel-gyeongmae-2025.html	https://gaachi.co.kr/cases/geumcheon-gasandong-officetel-gyeongmae-2025	-	STAGE_FAILED
 2026-09-30	010_geumcheon-gasandong-officetel-gyeongmae-2025.html	https://gaachi.co.kr/cases/geumcheon-gasandong-officetel-gyeongmae-2025-v2	a928d28	OK
+2026-10-01	013_geumcheon-gasandong-jisiksaneop-jaepyeongga-2025.html	https://gaachi.co.kr/cases/geumcheon-gasandong-jisiksaneop-jaepyeongga-2025	e6a32d6	OK

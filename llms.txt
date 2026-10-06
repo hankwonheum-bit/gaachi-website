@@ -4,6 +4,8 @@
 
 ## 감정평가 사례
 
+- [서울 서초구 반포동 반포주공1단지 아파트 입주권 증여 감정평가 사례](https://gaachi.co.kr/cases/seocho-banpo-banpojugong1-jeungyeo-2025-v2): 서울특별시 서초구 반포동 반포주공1단지 아파트 입주권(전유면적 53.125㎡, 소유권대지권 46.4335㎡) 증여세 신고 목적 감정평가 사례.
+- [서울 서초구 반포동 반포주공1단지 아파트 입주권 증여 감정평가 사례](https://gaachi.co.kr/cases/seocho-banpo-banpojugong1-jeungyeo-2025): 서울특별시 서초구 반포동 반포주공1단지 아파트 입주권(전유면적 53.125㎡, 소유권대지권 46.4335㎡) 증여세 신고 목적 감정평가 사례.
 - [천안 신당동 토지 특수관계인 임대료 감정평가 사례](https://gaachi.co.kr/cases/cheonan-sindangdong-toji-imdaeryo-2025): 충청남도 천안시 서북구 신당동 토지(임대면적 8,175㎡)의 특수관계인 간 임대차 적정임대료 감정평가 사례. 기준시점 2025년, 연간 실질임대료 137,000,000원.
 - [서울 여의도 광장아파트 상속 감정평가 사례](https://gaachi.co.kr/cases/yeouido-gwangjang-2025): 서울특별시 영등포구 여의도동 광장아파트 상속재산 신고 목적 감정평가 사례. 기준시점 2025년 12월 10일, 최종 감정평가액 36억 9,000만원. 거래사례비교법 적용. ㈜감정평가법인 가치앤같이.
 - [서울 금천구 가산동 지식산업센터 자산재평가 감정평가 사례](https://gaachi.co.kr/cases/geumcheon-gasandong-jisiksaneop-jaepyeongga-2025): ㈜감정평가법인 가치앤같이가 수행한 서울 금천구 가산동 지식산업센터 1개 호실(전유 130.14㎡)의 자산재평가 감정평가 사례입니다.
@@ -55,4 +57,4 @@
 
 - 전체 페이지 목록: https://gaachi.co.kr/sitemap.xml
 - 신규 사례 RSS 피드: https://gaachi.co.kr/feed.xml
-- 최종 갱신: 2026-10-02 (tools/make_llms_txt_v1.py 로 자동 생성)
+- 최종 갱신: 2026-10-06 (tools/make_llms_txt_v1.py 로 자동 생성)

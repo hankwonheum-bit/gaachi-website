@@ -1,14 +1,43 @@
+# ★ 2026-10-13 수정 — 404 를 301 로 교체 (소유자 지시: 유출은 어떻게든 막는다)
+#   사유: Cloudflare Pages 의 _redirects 는 404 상태코드를 지원하지 않는다.
+#     공식 문서 Advanced redirects 표가 'Rewrites (other status codes)' 를 미지원(X)으로 표시하고,
+#     하필 예시가 '/blog/* /blog/404.html 404' 로 종전 규칙과 같은 형태였다.
+#     'Only one redirect can be defined per line and must follow this format, otherwise it will be ignored.'
+#     -> 2026-09-30 에 넣은 404 5줄은 규칙으로 파싱되지 않고 통째로 무시되어 13일간 무효였다.
+#   파일이 존재해도 적용되는가: 된다. 공식 문서 원문 —
+#     'Redirects are always followed, regardless of whether or not an asset matches the incoming request.'
+#     (종전 저장소 메모의 '정적 파일 우선' 서술은 오류였다. 2026-10-13 1차 출처로 반증)
+#   출처: https://developers.cloudflare.com/pages/configuration/redirects/
+#   /404.html 이 아니라 / 로 보낸다 — _redirects 로는 404 를 낼 수 없으므로 /404.html 로 301 하면
+#     '404 페이지가 200 으로 서빙'되어 중복 콘텐츠만 생긴다.
+#   한글 경로는 퍼센트 인코딩 형태를 함께 넣는다(비ASCII source 처리가 공식 문서에 미기재).
+#   주의: 리다이렉트는 보안이 아니다 — 파일 바이트는 엣지에 그대로 올라가 있다.
+#     진짜 비밀값이 든 파일은 저장소에서 빼고 키를 교체해야 한다.
+#   ※ functions/ 디렉터리를 만들면 _redirects 전체가 무력화되고 모든 요청이 Functions 를 거친다. 만들지 말 것.
+
 # Cloudflare Pages 정적 배포 차단 규칙 (2026-09-30 신설)
 # 사유: automation/ 하위 내부 파일이 공개 서빙되어 사례 페이지에서 마스킹한
 #       지번·층·호·정확 금액이 그대로 열람 가능했음. 아래 경로는 404로 응답한다.
 # ※ IndexNow 키 파일(dbebde….txt)·robots.txt·sitemap.xml·feed.xml·llms.txt 는 차단하지 않는다.
-/automation/*   /404.html   404
-/templates/*    /404.html   404
-/CLAUDE.md      /404.html   404
-/gsc_index.py   /404.html   404
-/SEO_점검_v1.md  /404.html   404
+/automation/*                      /   301
+/automation                        /   301
+/templates/*                       /   301
+/templates                         /   301
+/CLAUDE.md                         /   301
+/gsc_index.py                      /   301
+/SEO_점검_v1.md                      /   301
+/SEO_%EC%A0%90%EA%B2%80_v1.md      /   301
 
 # 2026-10-06 — 006 서초 반포동 사례가 게시 재시도로 -v2 URL 까지 만들어져
 #   중복 콘텐츠가 되었다. 정본은 확장자/접미사 없는 주소이며 -v2 는 301 로 넘긴다.
 #   (삭제된 경로이므로 정적 파일 우선 규칙에 걸리지 않고 이 규칙이 적용된다)
+# ★ 2026-10-13 추가 — 차단 누락분. tools/ 와 snippets/ 가 목록에 빠져 있어 공개 서빙 중이었다.
+#   tools/make_feed_v1.py · tools/make_llms_txt_v1.py · snippets/* 가 git 추적 상태였다.
+#   와일드카드는 부모 경로를 포함하지 않으므로 /tools · /snippets 자체도 따로 넣는다.
+/tools/*                           /   301
+/tools                             /   301
+/snippets/*                        /   301
+/snippets                          /   301
+/.gitignore                        /   301
+
 /cases/seocho-banpo-banpojugong1-jeungyeo-2025-v2   /cases/seocho-banpo-banpojugong1-jeungyeo-2025   301

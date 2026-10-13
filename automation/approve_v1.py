@@ -235,20 +235,38 @@ def move_no_overwrite(src, dst_dir, label):
 
 
 # ---------------------------------------------------------------- 승인 / 반려
+# 승인 게이트가 쓸 검증기 — 최신 버전을 먼저 찾는다.
+#   초안은 생성 시점에 최신 검증기로 통과했으므로, 승인 게이트가 구버전을 쓰면
+#   구버전이 모르는 규칙(목적별 법령 오염 · MASK_LEVEL=range · 기준가치 공정가치 ·
+#   구 마스킹 기호 잔존 등)을 승인 단계에서 전혀 보지 못한다.
+#   따라서 뒤쪽(최신)부터 찾아 존재하는 첫 번째를 쓰고, 어느 검증기로 검사했는지 출력한다.
+VALIDATOR_CANDIDATES = ("validate_draft_v2.py", "validate_draft_v1.py")
+
+
+def pick_validator():
+    """존재하는 가장 최신 검증기의 (파일명, 절대경로) 를 반환. 없으면 (None, None)."""
+    for name in VALIDATOR_CANDIDATES:
+        vp = os.path.join(HERE, name)
+        if os.path.exists(vp):
+            return name, vp
+    return None, None
+
+
 def run_validator(html_path):
-    """validate_draft_v1.py 가 있으면 검증한다. 반환 (ok, 출력문자열)"""
-    vp = os.path.join(HERE, "validate_draft_v1.py")
-    if not os.path.exists(vp):
-        return True, "(validate_draft_v1.py 없음 — 검증 생략)"
+    """존재하는 가장 최신 검증기로 검증한다. 반환 (ok, 출력문자열)"""
+    name, vp = pick_validator()
+    if not vp:
+        return True, "(검증기 없음(%s) — 검증 생략)" % " / ".join(VALIDATOR_CANDIDATES)
     try:
         import importlib.util
-        spec = importlib.util.spec_from_file_location("validate_draft_v1", vp)
+        spec = importlib.util.spec_from_file_location(name[:-3], vp)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         errs, warns, stats = mod.validate_draft(html_path)
-        return (not errs), mod.report(html_path, errs, warns, stats)
+        head = "검증기: %s" % name
+        return (not errs), head + "\n" + mod.report(html_path, errs, warns, stats)
     except Exception as e:
-        return False, "검증기 실행 실패: %s" % e
+        return False, "검증기 실행 실패(%s): %s" % (name, e)
 
 
 def approve(key, force=False):

@@ -4,14 +4,17 @@
 가치앤같이 감정평가법인 — 사례 자동 게시 엔진 v1
 =================================================
 automation/queue/ 에 쌓아 둔 사례 HTML 중 가장 오래된(파일명 순) 1건을
-검증 -> cases/ 복사 -> sitemap.xml / index.html 갱신 -> git commit/push ->
+검증 -> cases/ 복사 -> sitemap.xml / index.html / feed.xml / llms.txt 갱신
+-> git commit/push ->
 IndexNow 통보 순서로 하루 1건만 게시한다.
 
 원칙
  - 기존 콘텐츠 파일은 절대 삭제/덮어쓰기 하지 않는다.
  - index.html / sitemap.xml 수정 전 타임스탬프 .bak 백업을 먼저 만든다.
  - cases/ 안에 동일 파일이 있으면 -v2, -v3 로 새 파일을 만든다.
-   (단, 직전 실행이 커밋 전에 실패해서 남긴 파일이면 -v2 를 만들지 않고 재사용한다.)
+   (단, 직전 실행이 커밋 전에 실패해서 남긴 파일이거나, 게시로그에 같은 초안
+    번호(NNN) 행이 이미 있으면 -v2 를 만들지 않고 그 파일을 제자리에서 다시 쓴다.
+    덮어쓰기 전에는 .bak-재게시-<날짜> 로 복사 보존한다. 2026-10-13)
  - 같은 날 두 번 실행해도 안전하다(멱등).
  - 커밋이 이뤄지지 않으면 대기열(queue/) 파일을 소비하지 않는다.
    '스테이지된 변경 없음' 은 절대로 성공으로 처리하지 않는다(STAGE_FAILED).
@@ -57,6 +60,11 @@ CONFIG_DIR = os.path.join(AUTO_DIR, "config")
 
 LOG_TSV = os.path.join(STATE_DIR, "published_log.tsv")
 LOG_HEADER = "date_kst\tfilename\turl\tcommit_sha\tresult"
+# 게시 로그 result 중 "오늘 이미 1건을 처리했다" 로 봐야 하는 값들.
+#   OK          = 커밋+푸시까지 성공(라이브 반영)
+#   COMMIT_ONLY = --no-push 로 커밋만 완료(라이브 미반영, 수동 Push 대기)
+# COMMIT_ONLY 를 빼면 같은 날 재실행이 대기열에서 다음 건을 또 집어
+# cases/<slug>-v2.html 중복 URL 을 만들 수 있다(2026-09-30 사례 010 사고).
 
 BLOCKLIST_FILE = os.path.join(CONFIG_DIR, "blocklist_names_v1.txt")
 FORBIDDEN_FILE = os.path.join(CONFIG_DIR, "forbidden_phrases_v1.txt")
@@ -153,6 +161,18 @@ def backup(path, dry=False):
     shutil.copy2(path, bak)
     log("백업 생성: %s" % os.path.basename(bak))
     return bak
+
+
+def inplace_bak_path(path):
+    """제자리 갱신으로 덮어쓸 파일의 보존본 경로(.bak-재게시-YYYYMMDD).
+    같은 날 두 번이면 -2, -3 … 을 붙여 기존 보존본을 덮어쓰지 않는다.
+    (.gitignore 의 *.bak-* 규칙으로 커밋에는 들어가지 않는다)"""
+    base = "%s.bak-재게시-%s" % (path, now_kst().strftime("%Y%m%d"))
+    cand, i = base, 2
+    while os.path.exists(cand):
+        cand = "%s-%d" % (base, i)
+        i += 1
+    return cand
 
 
 def resolve_git():
@@ -300,6 +320,63 @@ def clear_stale_git_lock(dry=False):
     return True
 
 
+# ------------------------------- index.lock 외 잠금 파일 (2026-10-13 신설)
+# 사고 경위(2026-10-06 사례 006): 10-02 비정상 종료가 .git/HEAD.lock 과
+#   .git/objects/maintenance.lock 을 0바이트로 남겼고, 그 뒤 실행이
+#     fatal: cannot lock ref 'HEAD'
+#   로 커밋 단계에서 실패했다. 이 스크립트는 index.lock 만 정리하던 탓에
+#   재실행이 또 -v2 를 만들어 같은 사례가 두 URL 로 게시됐다.
+# index.lock 과 달리 이쪽은 못 지워도 게시를 중단하지 않는다(경고만 남기고
+# 계속 진행). 안전장치로 0바이트 잠금만 지운다 — 내용이 있는 잠금은 지금
+# 돌고 있는 git 이 쓰고 있는 것일 수 있어 지우면 저장소가 깨진다.
+EXTRA_GIT_LOCKS = ("HEAD.lock", os.path.join("objects", "maintenance.lock"))
+
+
+def clear_extra_git_locks(dry=False):
+    """.git/HEAD.lock, .git/objects/maintenance.lock 중 0바이트로 남은 것을
+    지운다. 실패는 예외로 올리지 않고 경고만 남긴다.
+    반환: 지웠거나(실제 실행) 지울 예정인(DRY) 잠금 이름 목록"""
+    removed = []
+    try:
+        g = git_dir()
+    except Exception as e:
+        log("경고: .git 경로를 읽지 못해 잠금 파일 추가 정리를 건너뜁니다: %s" % e)
+        return removed
+    for rel in EXTRA_GIT_LOCKS:
+        show = ".git/" + rel.replace("\\", "/")
+        try:
+            lock = os.path.join(g, rel)
+            if not os.path.exists(lock):
+                continue
+            size = os.path.getsize(lock)
+            age = time.time() - os.path.getmtime(lock)
+            if size != 0:
+                log("경고: git 잠금 파일(%s)이 0바이트가 아니어서(%d바이트) "
+                    "건드리지 않습니다. git 이 지금 쓰고 있을 수 있습니다."
+                    % (show, size))
+                continue
+            if age < GIT_LOCK_STALE_SEC and _git_process_running():
+                log("경고: git 잠금 파일(%s)이 %d초 전에 생긴 0바이트 파일이고 "
+                    "git 프로세스가 보여서 건드리지 않습니다." % (show, int(age)))
+                continue
+            if dry:
+                log("[DRY] 0바이트 git 잠금 파일 제거 예정: %s (생성 %d초 전)"
+                    % (show, int(age)))
+                removed.append(show)
+                continue
+            os.remove(lock)
+        except Exception as e:
+            # 세션 셸처럼 삭제가 막힌 환경에서도 게시를 멈추지 않는다.
+            log("경고: git 잠금 파일(%s)을 정리하지 못했습니다 — 게시는 계속 "
+                "진행합니다. 커밋이 \"cannot lock ref\" 로 실패하면 파일 탐색기에서 "
+                "%s 폴더의 %s 를 직접 삭제해 주세요: %s" % (show, REPO, show, e))
+            continue
+        log("0바이트 git 잠금 파일을 제거했습니다: %s (생성 %d초 전)"
+            % (show, int(age)))
+        removed.append(show)
+    return removed
+
+
 # ---------------------------------------------------------------- 게시 로그
 def ensure_log():
     os.makedirs(STATE_DIR, exist_ok=True)
@@ -321,7 +398,7 @@ def log_rows():
 def already_published_today():
     t = today_dash()
     for r in log_rows():
-        if len(r) >= 5 and r[0] == t and r[4] == "OK":
+        if len(r) >= 5 and r[0] == t and r[4] in CONSUMED_RESULTS:
             return r
     return None
 
@@ -335,6 +412,63 @@ def append_log_row(date_kst, filename, url, sha, result, dry=False):
     with io.open(LOG_TSV, "a", encoding="utf-8") as f:
         f.write(row + "\n")
     log("게시로그 추가: %s" % row)
+
+
+CONSUMED_RESULTS = ("OK", "COMMIT_ONLY")
+
+
+# ------------------------- 같은 초안 번호(NNN) 재게시 판정 (2026-10-13 신설)
+# 사고 경위: 목적지 cases/<slug>.html 이 이미 있으면 -v2 로 '새 URL' 을 만드는
+#   규칙 때문에, 커밋 전에 실패한 실행을 재실행하면 같은 사례가 두 URL 로 게시되고
+#   두 페이지가 서로 자기 자신을 canonical 로 선언하는 중복 콘텐츠가 됐다.
+#     · 2026-09-30 사례 010 — 9/29 STAGE_FAILED 가 남긴 파일 위에 재실행
+#     · 2026-10-06 사례 006 — .git/HEAD.lock 잔존으로 커밋 실패 뒤 재실행
+#   소유자 결정으로 URL 정본은 '접미사 없는 주소' 이므로, 게시로그에 같은 초안
+#   번호가 이미 있으면 새 URL 을 만들지 말고 같은 파일을 제자리에서 갱신한다.
+def draft_num_of(filename):
+    """큐 파일명 'NNN_slug.html' 에서 초안 번호 NNN 을 뽑는다. 없으면 ''."""
+    m = re.match(r"^(\d+)_", os.path.basename(filename or ""))
+    return m.group(1) if m else ""
+
+
+def _same_draft_num(a, b):
+    """초안 번호 비교(선행 0 무시: '10' == '010'). 숫자가 아니면 문자열 비교."""
+    try:
+        return int(a) == int(b)
+    except (TypeError, ValueError):
+        return (a or "") == (b or "")
+
+
+def log_row_brief(row):
+    """게시로그 한 행을 짧은 문구로. 컬럼이 깨져 있어도 죽지 않는다."""
+    r = list(row) + ["-"] * 5
+    return "%s %s result=%s" % (r[0], r[2], r[4])
+
+
+def published_log_row_for_draft_num(num):
+    """published_log.tsv 에 같은 초안 번호(NNN) 행이 있으면 '마지막' 행을,
+    없으면 None 을 돌려준다.
+    - 로그 파일이 없으면 None (log_rows() 가 빈 목록) -> 종전 동작 유지
+    - 로그를 읽다 예외가 나면 경고만 남기고 None -> 종전 동작 유지
+    - 컬럼이 모자란 행·번호 없는 파일명은 조용히 건너뛴다(형식 깨짐 내성)
+    result 값은 보지 않는다. 행이 있다는 것 자체가 '이 초안은 전에 한 번
+    처리된 적이 있다' 는 뜻이고, 실패(STAGE_FAILED 등) 뒤 재실행이 바로
+    중복 URL 을 만들던 상황이기 때문이다."""
+    if not (num or "").strip():
+        return None
+    try:
+        rows = log_rows()
+    except Exception as e:
+        log("경고: 게시로그를 읽지 못해 초안 번호 대조를 건너뜁니다: %s" % e)
+        return None
+    hit = None
+    for r in rows:
+        if len(r) < 2:
+            continue
+        n = draft_num_of(r[1])
+        if n and _same_draft_num(n, num):
+            hit = r
+    return hit
 
 
 # ---------------------------------------------------------------- 검증
@@ -891,7 +1025,11 @@ def _is_staged(staged, rel):
 
 def git_publish(paths, msg, no_push=False, dry=False, expect=None):
     """반환: (commit_sha, result)
-    result in {OK, PUSH_FAIL, NO_CHANGE, STAGE_FAILED, COMMIT_FAIL, GIT_NOT_FOUND}
+    result in {OK, COMMIT_ONLY, PUSH_FAIL, NO_CHANGE, STAGE_FAILED, COMMIT_FAIL,
+              GIT_NOT_FOUND}
+    OK 는 '푸시까지 성공해 라이브에 반영됨' 만을 뜻한다. --no-push 로 커밋만 한
+    경우는 COMMIT_ONLY 로 구분한다 — 예전에는 이 경우도 OK 로 기록해서
+    게시 로그만 보면 라이브에 있는지 알 수 없었다(2026-10-01 사례 013).
 
     expect: 이번 실행에서 실제로 만들거나 고친 파일들(저장소 기준 상대경로).
             git add 이후 'git diff --cached --name-only' 로 정말 스테이지됐는지
@@ -901,6 +1039,9 @@ def git_publish(paths, msg, no_push=False, dry=False, expect=None):
     if dry:
         log("[DRY] git add: %s" % ", ".join(paths), dry)
         log("[DRY] git commit -m \"%s\"" % msg, dry)
+        if no_push:
+            log("[DRY] --no-push 지정으로 push 생략 (result=COMMIT_ONLY)", dry)
+            return "-", "COMMIT_ONLY"
         log("[DRY] git push origin main", dry)
         return "-", "OK"
 
@@ -921,6 +1062,7 @@ def git_publish(paths, msg, no_push=False, dry=False, expect=None):
     except GitLockError as e:
         log("오류: %s" % e)
         return "-", "STAGE_FAILED"
+    clear_extra_git_locks(False)
 
     # 1) git add — 반환값을 반드시 확인한다(예전 코드가 여기서 실패를 삼켰다).
     add_fail = []
@@ -987,8 +1129,10 @@ def git_publish(paths, msg, no_push=False, dry=False, expect=None):
     log("커밋 완료 %s : %s" % (sha, msg))
 
     if no_push:
-        log("--no-push 지정으로 push 생략")
-        return sha, "OK"
+        log("--no-push 지정으로 push 생략 — 커밋만 끝났고 홈페이지(라이브)에는 "
+            "아직 반영되지 않았습니다. (result=COMMIT_ONLY)")
+        log("★ 라이브에 올리려면: " + MANUAL_PUSH_HINT)
+        return sha, "COMMIT_ONLY"
 
     rc, out = git(["push", "origin", "main"])
     if rc == 0:
@@ -1060,6 +1204,64 @@ def undo_moves(pairs):
 
 
 # ---------------------------------------------------------------- main
+# ------------------------------------------- 미푸시 커밋 경고 (2026-10-05 신설)
+# 사고 경위: 2026-10-01·10-02 실행이 Claude 세션 셸에서 돌아 git 자격증명이 없었고
+#   fatal: could not read Username for 'https://github.com': No such device or address
+# 로 **push 만** 실패했다. 커밋 2건(e6a32d6·852809f)이 로컬에만 남은 결과
+#   ① 사례 2건이 라이브에서 404
+#   ② /automation/* 를 404 로 막는 _redirects 가 바로 그 커밋 안에 있어
+#      automation/state/generated_log.tsv 가 계속 200 으로 공개 서빙
+# 이 되었는데, 그 뒤 실행들은 대기열이 비어 "대기열 비어있음" 한 줄만 찍고 끝나는 탓에
+# **3일간 아무 경고가 없었다.** 그래서 대기열·멱등 체크보다 앞에서, 게시할 것이 있든
+# 없든 매 실행 미푸시 커밋을 세어 로그와 상태파일에 남긴다.
+# 이 함수는 **알리기만 하고 push 하지 않는다**(무인 실행에서 자격증명을 물을 수 없음).
+UNPUSHED_STATE = os.path.join(STATE_DIR, "unpushed_commits_v1.txt")
+
+
+def warn_unpushed_commits(dry=False):
+    """로컬에만 남은 커밋을 세어 경고한다. 실패해도 게시를 막지 않는다.
+
+    반환: 미푸시 커밋 수 (확인 불가 시 -1)
+    """
+    if not GIT_EXE:
+        return -1
+    try:
+        rc, ref = git(["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"])
+        if rc != 0 or not ref or " " in ref:
+            ref = "origin/main"
+        rc, out = git(["log", "--oneline", "%s..HEAD" % ref])
+        if rc != 0:
+            log("미푸시 커밋 확인을 건너뜁니다(%s 없음 또는 조회 실패): %s"
+                % (ref, _squeeze(out, 160)))
+            return -1
+        rows = [ln.strip() for ln in out.splitlines() if ln.strip()]
+        if not rows:
+            log("미푸시 커밋 없음 (%s 와 동기화됨)" % ref)
+            if not dry:
+                try:
+                    write_text(UNPUSHED_STATE, "%s\t0\t-\n" % today_dash())
+                except Exception:
+                    pass
+            return 0
+        log("!!! 미푸시 커밋 %d건 — 저장소에만 있고 홈페이지에는 반영되지 않았습니다 !!!"
+            % len(rows))
+        for ln in rows:
+            log("    미푸시: %s" % ln)
+        log("    -> GitHub Desktop 을 열고 Push 를 눌러 주셔야 라이브에 올라갑니다.")
+        log("    -> 사례 페이지 404 와 /automation/* 공개 서빙이 이 때문에 남아 있을 "
+            "수 있습니다. Push 후 두 URL 을 재확인해 주십시오.")
+        if not dry:
+            try:
+                write_text(UNPUSHED_STATE, "%s\t%d\t%s\n"
+                           % (today_dash(), len(rows), " | ".join(rows)))
+            except Exception:
+                pass
+        return len(rows)
+    except Exception as e:
+        log("미푸시 커밋 확인 중 예외(건너뜀): %s" % e)
+        return -1
+
+
 def main():
     ap = argparse.ArgumentParser(description="가치앤같이 사례 자동 게시 v1")
     ap.add_argument("--dry-run", action="store_true", help="파일/깃 변경 없이 시뮬레이션")
@@ -1087,6 +1289,10 @@ def main():
     if not dry:
         ensure_log()
 
+    # 0) 미푸시 커밋 경고 — 대기열·멱등 체크보다 먼저. 게시할 것이 없는 날에도
+    #    푸시 누락이 묻히지 않게 한다(2026-10-05 신설).
+    warn_unpushed_commits(dry)
+
     # 1) 멱등 체크
     done = already_published_today()
     if done and not args.force:
@@ -1110,6 +1316,7 @@ def main():
     #      여기서 못 지우면 뒤의 git add 가 전부 실패하므로 시작조차 하지 않는다.
     try:
         clear_stale_git_lock(dry)
+        clear_extra_git_locks(dry)
     except GitLockError as e:
         log("오류: %s" % e)
         log("대기열 파일(%s)은 queue/ 에 그대로 두었습니다. 잠금 파일을 지운 뒤 "
@@ -1150,18 +1357,40 @@ def main():
     cases_dir = os.path.join(REPO, "cases")
     final_slug = base_slug
     reuse_why = ""
+    inplace_bak_src = ""      # 제자리 갱신으로 덮어쓸 기존 파일(복사 보존 대상)
+    # (2026-10-13 신설) 게시로그에 같은 초안 번호 행이 이미 있으면 '같은 사례의
+    # 재실행' 이므로 -v2 로 새 URL 을 만들지 않는다. 로그는 여기서 한 번만 읽는다.
+    same_num_row = published_log_row_for_draft_num(seq)
     v = 1
+    clash_warned = False
     while os.path.exists(os.path.join(cases_dir, final_slug + ".html")):
         reuse_why = leftover_reason("cases/%s.html" % final_slug,
                                     os.path.join(cases_dir, final_slug + ".html"),
                                     html)
         if reuse_why:
             break
+        if same_num_row:
+            reuse_why = ("게시로그에 같은 초안 번호(%s) 행이 이미 있음[%s]"
+                         % (seq, log_row_brief(same_num_row)))
+            break
+        if not clash_warned:
+            clash_warned = True
+            log("경고: cases/%s.html 이 이미 있는데 게시로그에는 같은 초안 번호(%s) "
+                "행이 없습니다. 번호가 다른 '진짜 다른 사례' 인데 슬러그만 겹친 것으로 "
+                "보고 종전처럼 새 버전 URL 을 만듭니다. → 중복 콘텐츠 위험이 있으니 "
+                "사람이 초안 슬러그를 고유하게 손봐 주십시오."
+                % (final_slug, seq or "번호 없음"))
         v += 1
         final_slug = "%s-v%d" % (base_slug, v)
     if reuse_why:
+        inplace_bak_src = os.path.join(cases_dir, final_slug + ".html")
         log("cases/%s.html 이 이미 있지만 %s 이므로, 새 버전(-v%d)을 만들지 않고 "
-            "그 파일을 다시 씁니다." % (final_slug, reuse_why, v + 1))
+            "그 파일을 제자리에서 다시 씁니다." % (final_slug, reuse_why, v + 1))
+        if same_num_row:
+            log("※ 중복 URL 재발방지: URL 은 %s/cases/%s 그대로 유지합니다. 다만 "
+                "게시일 표기는 아래 스탬핑에서 오늘 날짜로 다시 찍히므로, 이미 "
+                "라이브인 페이지였다면 사람이 날짜를 확인해 주십시오."
+                % (SITE, final_slug))
     if final_slug != base_slug:
         log("cases/%s.html 이 이미 있어 %s 로 버전업합니다." % (base_slug, final_slug))
         html = re.sub(r'/cases/%s(?=["\'<\s])' % re.escape(base_slug),
@@ -1206,10 +1435,21 @@ def main():
     #    expect = 이번 실행에서 실제로 만들거나 고친 파일. git add 뒤에
     #    정말 스테이지됐는지 이 목록으로 확인한다.
     expect = []
+    inplace_bak = inplace_bak_path(inplace_bak_src) if inplace_bak_src else ""
+    bak_name = os.path.basename(inplace_bak) if inplace_bak else ""
     if dry:
         log("[DRY] 복사 예정: %s -> cases/%s.html" % (qname, final_slug))
+        if bak_name:
+            log("[DRY] 제자리 갱신 — 덮어쓰기 전 보존 예정: cases/%s" % bak_name)
     else:
         os.makedirs(cases_dir, exist_ok=True)
+        if inplace_bak and os.path.exists(inplace_bak_src):
+            # 삭제 금지 원칙: 덮어쓰기 전에 기존 파일을 복사 보존한다.
+            try:
+                shutil.copy2(inplace_bak_src, inplace_bak)
+                log("제자리 갱신 — 기존 파일을 보존했습니다: cases/%s" % bak_name)
+            except Exception as e:
+                log("경고: 기존 파일 보존(.bak) 실패 — 게시는 계속 진행합니다: %s" % e)
         write_text(dst, html)
         expect.append("cases/%s.html" % final_slug)
         log("사례 페이지 생성: cases/%s.html" % final_slug)
@@ -1231,6 +1471,43 @@ def main():
             expect.append("sitemap.xml")
     except Exception as e:
         log("경고: sitemap.xml 갱신 실패: %s" % e)
+
+    # 8.5) cases/index.html(사례 허브) / feed.xml / llms.txt 재생성
+    #      세 생성기는 cases/*.html 을 스캔하고, make_feed_v1.py 는 sitemap.xml 의
+    #      <lastmod> 를 대체 날짜로 읽는다. 따라서 반드시 6) 사례 복사와
+    #      8) sitemap 갱신 뒤에 호출한다.
+    #      허브 생성기를 feed·llms 보다 **먼저** 돌리는 이유: make_llms_txt_v1.py 가
+    #      허브의 <meta name="description"> 를 읽어 llms.txt 의 허브 줄 설명을 만들기
+    #      때문에, 허브를 나중에 고치면 llms.txt 가 한 주기 동안 옛 건수를 말한다.
+    #      허브 생성기는 신규 사례의 meta.tsv 를 queue/ 와 published/ 양쪽에서 찾는다
+    #      (이 시점에는 아직 10) 의 queue -> published 이동 전이다).
+    #      이 엔진은 매일 자동 실행되는 load-bearing 파일이므로, 생성기가 실패해도
+    #      게시 자체는 중단하지 않고 경고만 남긴다.
+    #      주의: 생성 결과가 직전과 같아도 게시가 멈추지 않도록 expect 에는 넣지 않고
+    #            커밋 대상(paths)에만 넣는다. expect 에 들어간 파일은 스테이지되지
+    #            않으면 STAGE_FAILED 로 게시가 중단된다.
+    for gen_name, gen_out in (("make_cases_index_v1.py", "cases/index.html"),
+                              ("make_feed_v1.py", "feed.xml"),
+                              ("make_llms_txt_v1.py", "llms.txt")):
+        gen_path = os.path.join(REPO, "tools", gen_name)
+        if not os.path.exists(gen_path):
+            log("경고: tools/%s 이 없어 %s 재생성을 건너뜁니다." % (gen_name, gen_out))
+            continue
+        if dry:
+            log("[DRY] 재생성 예정: %s (tools/%s)" % (gen_out, gen_name))
+            continue
+        try:
+            pr = subprocess.run([sys.executable, gen_path], cwd=REPO,
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                timeout=180)
+            out = (pr.stdout or b"").decode("utf-8", "replace").strip()
+            if pr.returncode == 0:
+                log("%s 재생성 완료: %s" % (gen_out, _squeeze(out.splitlines()[-1] if out else "", 160)))
+            else:
+                log("경고: %s 재생성 실패(코드 %s, 게시는 계속 진행): %s"
+                    % (gen_out, pr.returncode, _squeeze(out, 300)))
+        except Exception as e:
+            log("경고: %s 재생성 중 예외(게시는 계속 진행): %s" % (gen_out, e))
 
     # 9) index.html (카드 실패해도 게시는 중단하지 않음)
     idx = os.path.join(REPO, "index.html")
@@ -1283,6 +1560,12 @@ def main():
     #       절대 커밋 대상에 넣지 않는다(automation/.gitignore 로도 제외).
     paths = ["cases/%s.html" % final_slug, "sitemap.xml", "index.html",
              "automation/queue", "automation/published", "automation/state"]
+    # 8.5) 에서 재생성한 색인 파일과, 배포 제외 설정 파일을 커밋에 포함한다.
+    # (내용이 그대로면 git add 가 아무것도 올리지 않으므로 무해하다.
+    #  expect 에는 넣지 않는다 — 위 8.5) 주의 참고)
+    for extra in ("cases/index.html", "feed.xml", "llms.txt", "_redirects"):
+        if os.path.exists(os.path.join(REPO, extra)):
+            paths.append(extra)
     if keyfile:
         paths.append(os.path.basename(keyfile))
     sha, result = git_publish(paths, msg, args.no_push, dry, expect=expect)
@@ -1316,12 +1599,16 @@ def main():
             log("★ cases/%s.html 은 만들어진 채로 남아 있지만 커밋되지 않았습니다. "
                 "다음 실행에서 -v2 를 새로 만들지 않고 이 파일을 다시 씁니다."
                 % final_slug)
+    elif result == "COMMIT_ONLY":
+        log("==== 완료(커밋까지): %s ====" % url)
+        log("★ 아직 라이브에 없습니다. 홈페이지에 올리려면: " + MANUAL_PUSH_HINT)
     else:
         log("==== 완료: %s (%s) ====" % (url, result))
 
     # GIT_NOT_FOUND 는 오류가 아니다. 수동 Push 로 복구 가능하므로 0 으로 끝낸다.
     # STAGE_FAILED / COMMIT_FAIL / PUSH_FAIL 은 반드시 0 이 아닌 값으로 끝낸다.
-    return 0 if result in ("OK", "NO_CHANGE", "GIT_NOT_FOUND") else 1
+    return 0 if result in ("OK", "COMMIT_ONLY", "NO_CHANGE",
+                           "GIT_NOT_FOUND") else 1
 
 
 if __name__ == "__main__":

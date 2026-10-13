@@ -15,3 +15,4 @@ date_kst	filename	url	commit_sha	result
 2026-10-08	016_gangseo-magokdong-officetel-sigacham-2025.html	https://gaachi.co.kr/cases/gangseo-magokdong-officetel-sigacham-2025	3c1aba0	OK
 2026-10-08	017_pyeongtaek-paengseongeup-toji-jaepyeongga-2025.html	https://gaachi.co.kr/cases/pyeongtaek-paengseongeup-toji-jaepyeongga-2025	-	STAGE_FAILED
 2026-10-08	017_pyeongtaek-paengseongeup-toji-jaepyeongga-2025.html	https://gaachi.co.kr/cases/pyeongtaek-paengseongeup-toji-jaepyeongga-2025	5f425a8	COMMIT_ONLY
+2026-10-13	012_gangnam-nonhyeondong-imdaeryo-2025.html	https://gaachi.co.kr/cases/gangnam-nonhyeondong-imdaeryo-2025	ff1fb8b	OK

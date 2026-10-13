@@ -132,6 +132,11 @@ def collect_cases(root: str, lastmods: dict[str, str]) -> list[dict]:
     items: list[dict] = []
     for path in sorted(glob.glob(os.path.join(root, "cases", "*.html"))):
         name = os.path.basename(path)
+        # cases/index.html 은 사례 허브 페이지이므로 RSS item 으로 싣지 않는다.
+        # (허브는 article:published_time 이 없어 파일 mtime 이 pubDate 가 되고,
+        #  재생성마다 같은 guid 의 pubDate 가 바뀌어 리더가 재노출한다.)
+        if name == "index.html":
+            continue
         src = io.open(path, encoding="utf-8", errors="replace").read()
 
         m = re.search(r"<title[^>]*>(.*?)</title>", src, re.I | re.S)

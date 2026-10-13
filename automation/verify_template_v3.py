@@ -1,6 +1,14 @@
 # -*- coding: utf-8 -*-
-"""v3 템플릿 / 필드정의 v2 검증기 (읽기 전용).
-사용법: python3 verify_v3.py <case_template_v3.html> <필드정의_v2.tsv>
+"""템플릿 ↔ 필드정의 정합성 검증기 (읽기 전용) — 버전 무관.
+
+파일명의 `v3` 는 최초 작성 시점(2026-09-16, case_template_v3 대상)의 잔재입니다.
+이 도구는 인자로 받은 두 파일만 서로 비교하므로 어느 버전 조합에도 그대로 동작합니다.
+현행(2026-09-29 기준)은 case_template_v6.html <-> 필드정의_v5.tsv 를 검증합니다.
+개명하지 않습니다 — 파일명을 참조하는 문서가 9곳(폐기된 구버전 포함)이고,
+저장소의 파일 삭제·개명 금지 관례와 부딪히기 때문입니다.
+
+사용법: python3 automation/verify_template_v3.py <템플릿.html> <필드정의.tsv>
+현행 예: python3 automation/verify_template_v3.py templates/case_template_v6.html templates/필드정의_v5.tsv
 """
 import io, json, re, sys
 
@@ -85,12 +93,19 @@ def main():
     left = {k: len(re.findall(v, h)) for k, v in dead.items()}
     out.append('[7] v2 폐지규칙 잔재: ' + ' / '.join('%s %d' % (k, v) for k, v in left.items()))
     if sum(left.values()): errs.append('폐지된 v2 규칙 잔재 %d건' % sum(left.values()))
-    # 7-1) 층·호 마스킹(오너 확정 2026-09-16 재도입): 마스킹 마크업을 쓰면 .addr-mask CSS 가 있어야 한다
-    mask_css = len(re.findall(r'\.addr-mask\s*\{', h))
-    mask_use = len(re.findall(r'class="addr-mask"', h))
-    out.append('[7-1] 층·호 마스킹   : .addr-mask CSS %d건 / 마스킹 마크업 %d건 / 층·호 토큰 %s'
-               % (mask_css, mask_use, 'FLOOR_MASKED·UNIT_MASKED 있음' if ('FLOOR_MASKED' in h and 'UNIT_MASKED' in h) else '없음'))
-    if mask_css == 0: errs.append('.addr-mask CSS 정의 없음')
+    # 7-1) 층·호 마스킹(오너 확정 2026-09-30 / **2026-10-13 표기 축약**): 평문 O 기호만 쓴다.
+    #      CSS 스팬(.addr-mask)과 블록문자(█·▇·■)는 소스 노출·스타일 제거로 자리수가 드러나 폐지.
+    #      2026-10-13 소유자 지시로 신 기호는 `O층`·`OO호`(붙여 쓰면 `O층OO호`) 가 되었다.
+    #      구 기호에는 자릿수를 맞춘 구 표기 `제OO층`·`OOO호` 도 포함된다.
+    #      `제OO층` 은 `O층` 을, `OOO호` 는 `OO호` 를 부분문자열로 포함하므로
+    #      신 기호는 **구 표기를 지운 사본**에서 센다(그냥 세면 구 표기가 신 기호로 오인된다).
+    mask_old = (len(re.findall(r'addr-mask', h)) + len(re.findall(r'[\u2588\u2587\u25a0]', h))
+                + h.count('제OO층') + h.count('OOO호'))
+    h_nm = h.replace('제OO층', ' ').replace('OOO호', ' ')
+    mask_new = h_nm.count('O층') + h_nm.count('OO호')
+    out.append('[7-1] 층·호 마스킹   : 구 기호(addr-mask/█/▇/■/제OO층/OOO호) %d건 / 신 기호(O층·OO호) %d건 / 층·호 토큰 %s'
+               % (mask_old, mask_new, 'FLOOR_MASKED·UNIT_MASKED 있음' if ('FLOOR_MASKED' in h and 'UNIT_MASKED' in h) else '없음'))
+    if mask_old: errs.append('구 마스킹 기호(addr-mask/█/▇/■/제OO층/OOO호) 잔존 %d건 — 평문 `O층OO호` 로 교체할 것' % mask_old)
 
     # 8) 필드정의 ↔ 템플릿 토큰 1:1 · 순서 일치
     rows = [l.rstrip('\n').split('\t') for l in io.open(tsv_path, encoding='utf-8') if l.strip()]

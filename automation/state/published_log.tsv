@@ -14,4 +14,4 @@ date_kst	filename	url	commit_sha	result
 2026-10-06	006_seocho-banpo-banpojugong1-jeungyeo-2025.html	https://gaachi.co.kr/cases/seocho-banpo-banpojugong1-jeungyeo-2025	e7cd02d	OK
 2026-10-08	016_gangseo-magokdong-officetel-sigacham-2025.html	https://gaachi.co.kr/cases/gangseo-magokdong-officetel-sigacham-2025	3c1aba0	OK
 2026-10-08	017_pyeongtaek-paengseongeup-toji-jaepyeongga-2025.html	https://gaachi.co.kr/cases/pyeongtaek-paengseongeup-toji-jaepyeongga-2025	-	STAGE_FAILED
-2026-10-08	017_pyeongtaek-paengseongeup-toji-jaepyeongga-2025.html	https://gaachi.co.kr/cases/pyeongtaek-paengseongeup-toji-jaepyeongga-2025	-	PENDING_COMMIT
+2026-10-08	017_pyeongtaek-paengseongeup-toji-jaepyeongga-2025.html	https://gaachi.co.kr/cases/pyeongtaek-paengseongeup-toji-jaepyeongga-2025	5f425a8	COMMIT_ONLY

@@ -6,10 +6,17 @@
     <description>㈜감정평가법인 가치앤같이가 실제로 수행한 감정평가 사례. 상속재산 감정평가, 증여세 감정평가, 세무서 제출용 시가인정액, 취득세 시가인정액, 법원 촉탁·담보·보상 평가 등 목적별 실무 사례를 공개합니다.</description>
     <language>ko</language>
     <atom:link href="https://gaachi.co.kr/feed.xml" rel="self" type="application/rss+xml" />
-    <lastBuildDate>Thu, 15 Oct 2026 00:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 16 Oct 2026 00:00:00 +0900</lastBuildDate>
     <generator>tools/make_feed_v1.py</generator>
     <docs>https://www.rssboard.org/rss-specification</docs>
     <ttl>1440</ttl>
+    <item>
+      <title>서울 영등포구 여의도동 업무시설 신탁재산 감정평가 사례 — 가치앤같이 감정평가법인</title>
+      <link>https://gaachi.co.kr/cases/yeongdeungpo-yeouidodong-eopmusiseol-sintak-2025</link>
+      <guid isPermaLink="true">https://gaachi.co.kr/cases/yeongdeungpo-yeouidodong-eopmusiseol-sintak-2025</guid>
+      <pubDate>Fri, 16 Oct 2026 00:00:00 +0900</pubDate>
+      <description><![CDATA[㈜감정평가법인 가치앤같이가 수행한 서울 영등포구 여의도동 업무시설 구분건물(전유면적 약 160㎡) 신탁재산 감정평가 사례입니다. 기준시점 2025년, 기준가치는 시장가치이며 「감정평가에 관한 규칙」 제16조에 따라 거래사례비교법을 적용해 감정평가액 17억원대로 결정하였습니다.]]></description>
+    </item>
     <item>
       <title>울산 울주군 서생면 근린생활시설 공매 감정평가 사례 — 가치앤같이 감정평가법인</title>
       <link>https://gaachi.co.kr/cases/ulju-seosaengmyeon-geunsaeng-gongmae-2025</link>

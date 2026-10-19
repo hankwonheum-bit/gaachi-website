@@ -77,6 +77,8 @@ PING_SCRIPT = os.path.join(AUTO_DIR, "ping_indexnow_v1.py")
 #   이 조합은 index.html 전체에서 정확히 1회만 등장하므로 <div> 균형을
 #   직접 세는 것보다 훨씬 안전하다. (없으면 아래 fallback 사용)
 GRID_END_ANCHOR = '    </div>\n    <div class="no-result" id="noResult">'
+# 2026-10-19 소유자 지시 — 최신 사례가 홈 상단에 오도록 새 카드는 그리드 '맨 위'에 넣는다.
+GRID_START_ANCHOR = '<div class="cases-grid" id="casesGrid">\n'
 
 FIRM_LINE = ('          <p>감정평가법인: 가치앤같이 감정평가법인 '
              '(서울특별시 서초구 강남대로 86, 5층, 양재동 가람빌딩)</p>')
@@ -909,14 +911,13 @@ def build_card(meta, slug, num):
         '          </div>\n'
         '          <div class="case-value-row">\n'
         '            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">%s</div></div>\n'
-        '            <div class="case-more">상세 보기 →</div>\n'
+        '            <a class="case-more" href="/cases/%s">상세 보기 →</a>\n'
         '          </div>\n'
         '          <div class="case-date-badge">%s 업데이트</div>\n'
-        '          <a class="case-link" href="/cases/%s">%s 사례 자세히 보기</a>\n'
         '        </div>\n'
         '      </div>'
         % (cat, slug, num, tag, t1, t2, purpose, sijae, gijun, method,
-           value_text, today_dot(), slug, anchor))
+           value_text, slug, today_dot()))
 
 
 def _balanced_block_end(html, start):
@@ -939,8 +940,12 @@ def update_index(path, card, slug, dry=False):
         return False
     backup(path, dry)
 
-    if GRID_END_ANCHOR in html:
-        anchor = "cases-grid 닫힘 + no-result 형제 마커"
+    if GRID_START_ANCHOR in html:
+        anchor = "cases-grid 열림 마커(맨 위 삽입 — 최신 사례 상단 노출)"
+        new = html.replace(GRID_START_ANCHOR,
+                           GRID_START_ANCHOR + card + "\n", 1)
+    elif GRID_END_ANCHOR in html:
+        anchor = "cases-grid 닫힘 + no-result 형제 마커(맨 아래 삽입 — 폴백)"
         new = html.replace(GRID_END_ANCHOR,
                            "\n" + card + "\n" + GRID_END_ANCHOR, 1)
     else:
@@ -1513,9 +1518,13 @@ def main():
     idx = os.path.join(REPO, "index.html")
     num = meta.get("num") or ""
     try:
-        if not num:
-            num = next_case_num(read_text(idx))
-        num = ("%02d" % int(num)) if str(num).isdigit() else str(num)
+        # 2026-10-19 — 홈 카드 번호는 '과거 등록된 것부터 1' 로 순차 부여한다.
+        # meta.num 은 참고값으로만 두고, 실제 번호는 index.html 의 최대값 +1 로 정한다
+        # (meta.num 을 그대로 쓰면 번호가 겹치는 사고가 010·015 에서 두 번 났다).
+        auto = next_case_num(read_text(idx))
+        if num and str(num).isdigit() and ("%02d" % int(num)) != auto:
+            log("카드 번호: meta.num=%s 이지만 홈 기준 순번 %s 를 사용합니다." % (num, auto))
+        num = auto
         card = build_card(meta, final_slug, num)
         if update_index(idx, card, final_slug, dry) and not dry:
             expect.append("index.html")

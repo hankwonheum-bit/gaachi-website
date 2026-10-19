@@ -134,11 +134,18 @@
   .case-value-row { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); }
   .case-value-label { font-size: 11px; color: var(--text-faint); }
   .case-value-num { font-family: 'Cormorant Garamond', serif; font-size: 21px; font-weight: 600; color: var(--gold); }
-  .case-more { font-size: 12px; color: rgba(184,147,90,0.6); }
+  .case-more { font-size: 12px; color: rgba(184,147,90,0.6); text-decoration: none; }
+    .case-more:hover { color: var(--gold); }
   .case-date-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: var(--gold); background: rgba(184,147,90,0.1); border: 1px solid rgba(184,147,90,0.3); border-radius: 4px; padding: 4px 10px; margin-top: 12px; letter-spacing: .3px; }
   .case-date-badge::before { content: '🗓'; font-size: 11px; }
   .no-result { display: none; text-align: center; padding: 60px 0; font-size: 14px; color: var(--text-faint); }
   .no-result.show { display: block; }
+    .case-card.over-limit { display: none; }
+    .cases-more-wrap { text-align: center; margin-top: 28px; }
+    .cases-more-btn { display: inline-flex; align-items: center; gap: 9px; padding: 13px 30px; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--text-dim); font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: .02em; cursor: pointer; transition: border-color .2s, color .2s, background .2s; }
+    .cases-more-btn:hover { border-color: var(--gold); color: var(--text); background: rgba(184,147,90,0.06); }
+    .cases-more-arrow { font-size: 15px; color: var(--gold); transition: transform .25s; }
+    .cases-more-wrap.expanded .cases-more-arrow { transform: rotate(180deg); }
   /* MODAL */
   .modal-overlay { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(20,18,14,0.6); backdrop-filter: blur(6px); overflow-y: auto; padding: 40px 20px; }
   .modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
@@ -564,509 +571,45 @@
       <button class="cat-btn" onclick="filterCases('무형자산', this)">무형자산</button>
     </div>
     <div class="cases-grid" id="casesGrid">
-      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/yeouido-gwangjang-2025'">
+      <div class="case-card fade-up" data-cat="특수관계인" onclick="location.href='/cases/seongbuk-gireumdong-geunsaeng-sigacham-2025'">
         <div class="case-card-head">
-          <div class="case-num">01</div>
-          <div class="case-tag">상속 · 증여</div>
-          <div class="case-title">서울 여의도 광장아파트<br>감정평가</div>
-          <div class="case-purpose">상속재산 신고 및 세무서 제출 목적</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 영등포구 여의도동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">36억 9,000만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 03. 31 업데이트</div>
-          <a class="case-link" href="/cases/yeouido-gwangjang-2025">서울 여의도 광장아파트 상속재산 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/seongbuk-dongseondong-2025'">
-        <div class="case-card-head">
-          <div class="case-num">02</div>
-          <div class="case-tag">상속 · 증여</div>
-          <div class="case-title">서울 성북구 동선동<br>다가구주택 감정평가</div>
-          <div class="case-purpose">상속재산 신고 및 세무서 제출 목적</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 성북구 동선동2가</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">공시지가기준법 + 원가법</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">7억 9,994만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 04. 07 업데이트</div>
-          <a class="case-link" href="/cases/seongbuk-dongseondong-2025">서울 성북구 동선동 다가구주택 상속재산 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/yangcheon-mokdong-2025'">
-        <div class="case-card-head">
-          <div class="case-num">03</div>
-          <div class="case-tag">상속 · 증여</div>
-          <div class="case-title">서울 양천구 목동<br>신시가지아파트 감정평가</div>
-          <div class="case-purpose">상속재산 신고 및 세무서 제출 목적</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 양천구 목동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">20억 7,000만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 04. 08 업데이트</div>
-          <a class="case-link" href="/cases/yangcheon-mokdong-2025">서울 양천구 목동 신시가지아파트 상속재산 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/dongdaemun-imun-2025'">
-        <div class="case-card-head">
-          <div class="case-num">04</div>
-          <div class="case-tag">상속 · 증여</div>
-          <div class="case-title">서울 동대문구 이문동<br>이문아이파크자이 입주권 감정평가</div>
-          <div class="case-purpose">상속재산 신고 및 세무서 제출 목적 · 재개발 입주권</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 동대문구 이문동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법 (입주권)</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">11억 5,000만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 04. 13 업데이트</div>
-          <a class="case-link" href="/cases/dongdaemun-imun-2025">서울 동대문구 이문동 이문아이파크자이 입주권 상속재산 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/gangnam-ilwon-woosungchapt-2025'">
-        <div class="case-card-head">
-          <div class="case-num">05</div>
-          <div class="case-tag">상속 감정평가</div>
-          <div class="case-title">서울 강남구 일원동<br>우성7차아파트 감정평가</div>
-          <div class="case-purpose">상속재산 신고 및 세무서 제출 목적</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 강남구 일원동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">29억 5,000만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 04. 15 업데이트</div>
-          <a class="case-link" href="/cases/gangnam-ilwon-woosungchapt-2025">서울 강남구 일원동 우성7차아파트 상속재산 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/dongjak-daebang-epyeonhansesang-2026'">
-        <div class="case-card-head">
-          <div class="case-num">06</div>
-          <div class="case-tag">증여 감정평가</div>
-          <div class="case-title">서울 동작구 대방동<br>대방1차이-편한세상 감정평가</div>
-          <div class="case-purpose">증여재산 신고 및 세무서 제출 목적</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 동작구 대방동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2026년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">14억 9,000만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 04. 22 업데이트</div>
-          <a class="case-link" href="/cases/dongjak-daebang-epyeonhansesang-2026">서울 동작구 대방동 대방1차이-편한세상 증여재산 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/gangdong-seongnae-2025'">
-        <div class="case-card-head">
-          <div class="case-num">07</div>
-          <div class="case-tag">상속 감정평가</div>
-          <div class="case-title">서울 강동구 성내동<br>근린생활시설 감정평가</div>
-          <div class="case-purpose">상속세 신고 및 세무서 제출 목적</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 강동구 성내동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법 + 원가법</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">15억 7,701만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 04. 23 업데이트</div>
-          <a class="case-link" href="/cases/gangdong-seongnae-2025">서울 강동구 성내동 근린생활시설 상속재산 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/namyangju-byeollae-ipark-suite-2026'">
-        <div class="case-card-head">
-          <div class="case-num">08</div>
-          <div class="case-tag">상속·증여 감정평가</div>
-          <div class="case-title">경기 남양주시 별내동<br>별내역아이파크스위트 상가 감정평가</div>
-          <div class="case-purpose">세무서 제출용 · 상속·증여세 신고 시가참고</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">경기 남양주시 별내동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2026년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">3억 3,400만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 06. 23 업데이트</div>
-          <a class="case-link" href="/cases/namyangju-byeollae-ipark-suite-2026">경기 남양주시 별내동 별내역아이파크스위트 상가 상속·증여 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/gangnam-gaepo-hyundai-2025'">
-        <div class="case-card-head">
-          <div class="case-num">09</div>
-          <div class="case-tag">상속재산 감정평가</div>
-          <div class="case-title">서울 강남구 개포동<br>현대아파트 감정평가</div>
-          <div class="case-purpose">상속재산 평가 및 관할세무서 제출 목적</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 강남구 개포동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">40억 5,000만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 09. 16 업데이트</div>
-          <a class="case-link" href="/cases/gangnam-gaepo-hyundai-2025">서울 강남구 개포동 현대아파트 상속재산 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/songpa-munjeong-olympicfamily-sangsok-2025'">
-        <div class="case-card-head">
-          <div class="case-num">10</div>
-          <div class="case-tag">상속재산 감정평가</div>
-          <div class="case-title">서울 송파구 문정동<br>올림픽훼밀리타운 감정평가</div>
-          <div class="case-purpose">상속재산 평가 및 관할세무서 제출 목적</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 송파구 문정동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">24억 9,000만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 09. 18 업데이트</div>
-          <a class="case-link" href="/cases/songpa-munjeong-olympicfamily-sangsok-2025">서울 송파구 문정동 올림픽훼밀리타운 상속재산 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/songpa-bangi-olympicseonsu-sangsok-2025'">
-        <div class="case-card-head">
-          <div class="case-num">11</div>
-          <div class="case-tag">상속재산 감정평가</div>
-          <div class="case-title">서울 송파구 방이동<br>올림픽선수기자촌아파트 감정평가</div>
-          <div class="case-purpose">상속재산 평가 및 관할세무서 제출 목적</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 송파구 방이동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">29억 7,000만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 09. 23 업데이트</div>
-          <a class="case-link" href="/cases/songpa-bangi-olympicseonsu-sangsok-2025">서울 송파구 방이동 올림픽선수기자촌아파트 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/gangnam-dogok-woosung-sangsok-2025'">
-        <div class="case-card-head">
-          <div class="case-num">12</div>
-          <div class="case-tag">상속재산 감정평가</div>
-          <div class="case-title">서울 강남구 도곡동<br>도곡우성아파트 감정평가</div>
-          <div class="case-purpose">상속재산 평가 및 관할세무서 제출 목적</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 강남구 도곡동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">18억 7,000만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 09. 23 업데이트</div>
-          <a class="case-link" href="/cases/gangnam-dogok-woosung-sangsok-2025">서울 강남구 도곡동 도곡우성아파트 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/gangdong-godeok-grasium-sangsok-2025'">
-        <div class="case-card-head">
-          <div class="case-num">13</div>
-          <div class="case-tag">상속재산 감정평가</div>
-          <div class="case-title">서울 강동구 고덕동<br>고덕그라시움 감정평가</div>
-          <div class="case-purpose">상속재산 평가 및 관할세무서 제출 목적</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 강동구 고덕동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">17억원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 09. 23 업데이트</div>
-          <a class="case-link" href="/cases/gangdong-godeok-grasium-sangsok-2025">서울 강동구 고덕동 고덕그라시움 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="재무보고" onclick="location.href='/cases/yeongdeungpo-yeongdeungpo5ga-jaepyeongga-2024'">
-        <div class="case-card-head">
-          <div class="case-num">17</div>
-          <div class="case-tag">자산재평가 감정평가</div>
-          <div class="case-title">서울 영등포구 영등포동5가<br>토지·건물 자산재평가 감정평가</div>
-          <div class="case-purpose">유형자산재평가(재무보고) 목적</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 영등포구 영등포동5가</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2024년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">토지 공시지가기준법 · 건물 원가법</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">173억원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 09. 28 업데이트</div>
-          <a class="case-link" href="/cases/yeongdeungpo-yeongdeungpo5ga-jaepyeongga-2024">서울 영등포구 영등포동5가 토지·건물 자산재평가 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="소송·경매" onclick="location.href='/cases/geumcheon-gasandong-officetel-gyeongmae-2025'">
-        <div class="case-card-head">
-          <div class="case-num">18</div>
-          <div class="case-tag">법원경매 감정평가</div>
-          <div class="case-title">서울 금천구 가산동<br>오피스텔 법원경매 감정평가</div>
-          <div class="case-purpose">법원경매(촉탁) 목적</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울특별시 금천구 가산동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법 (제16조 일괄감정평가)</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">1억 9,200만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 09. 29 업데이트</div>
-          <a class="case-link" href="/cases/geumcheon-gasandong-officetel-gyeongmae-2025">서울 금천구 가산동 오피스텔 법원경매 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="소송·경매" onclick="location.href='/cases/geumcheon-gasandong-officetel-gyeongmae-2025-v2'">
-        <div class="case-card-head">
-          <div class="case-num">18</div>
-          <div class="case-tag">법원경매 감정평가</div>
-          <div class="case-title">서울 금천구 가산동<br>오피스텔 법원경매 감정평가</div>
-          <div class="case-purpose">법원경매(촉탁) 목적</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울특별시 금천구 가산동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법 (제16조 일괄감정평가)</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">1억 9,200만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 09. 30 업데이트</div>
-          <a class="case-link" href="/cases/geumcheon-gasandong-officetel-gyeongmae-2025-v2">서울 금천구 가산동 오피스텔 법원경매 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="재무보고" onclick="location.href='/cases/geumcheon-gasandong-jisiksaneop-jaepyeongga-2025'">
-        <div class="case-card-head">
-          <div class="case-num">20</div>
-          <div class="case-tag">자산재평가 감정평가</div>
-          <div class="case-title">서울 금천구 가산동<br>지식산업센터 자산재평가 감정평가</div>
-          <div class="case-purpose">자산재평가 (재무보고 목적)</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울특별시 금천구 가산동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">토지·건물 일괄 거래사례비교법 (규칙 제16조) 후 토지 배분비율 50% 적용</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">387,500,000원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 10. 01 업데이트</div>
-          <a class="case-link" href="/cases/geumcheon-gasandong-jisiksaneop-jaepyeongga-2025">서울 금천구 가산동 지식산업센터 자산재평가 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="특수관계인" onclick="location.href='/cases/cheonan-sindangdong-toji-imdaeryo-2025'">
-        <div class="case-card-head">
-          <div class="case-num">21</div>
-          <div class="case-tag">특수관계인 거래 감정평가</div>
-          <div class="case-title">충남 천안시 서북구 신당동<br>특수관계인 토지 임대료 감정평가</div>
-          <div class="case-purpose">특수관계인 간 임대차의 적정임대료 산정</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">충청남도 천안시 서북구 신당동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년 (임대차 1년간)</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">적산법 (기초가액 × 기대이율)</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">연간 실질임대료 1억 3,700만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 10. 02 업데이트</div>
-          <a class="case-link" href="/cases/cheonan-sindangdong-toji-imdaeryo-2025">충남 천안시 서북구 신당동 특수관계인 토지 임대료 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/seocho-banpo-banpojugong1-jeungyeo-2025'">
-        <div class="case-card-head">
-          <div class="case-num">14</div>
-          <div class="case-tag">증여재산 감정평가</div>
-          <div class="case-title">서울 서초구 반포동<br>반포주공1단지 아파트 입주권 감정평가</div>
-          <div class="case-purpose">증여재산 평가 및 관할세무서 제출 목적</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 서초구 반포동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">24억 7,000만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 10. 06 업데이트</div>
-          <a class="case-link" href="/cases/seocho-banpo-banpojugong1-jeungyeo-2025">서울 서초구 반포동 반포주공1단지 아파트 입주권 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="특수관계인" onclick="location.href='/cases/gangseo-magokdong-officetel-sigacham-2025'">
-        <div class="case-card-head">
-          <div class="case-num">22</div>
+          <div class="case-num">26</div>
           <div class="case-tag">시가참고 감정평가</div>
-          <div class="case-title">서울 강서구 마곡동<br>업무시설(오피스텔) 감정평가</div>
+          <div class="case-title">서울 성북구 길음동<br>근린생활시설 감정평가</div>
           <div class="case-purpose">일반거래(시가참고) 목적</div>
         </div>
         <div class="case-card-body">
           <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울특별시 강서구 마곡동</div></div>
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울특별시 성북구 길음동</div></div>
             <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">토지·건물 일괄 거래사례비교법 (규칙 제16조)</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">토지 공시지가기준법 · 건물 원가법 (규칙 제14조·제15조)</div></div>
           </div>
           <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">2억 2,000만원</div></div>
-            <div class="case-more">상세 보기 →</div>
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">260억 201만원</div></div>
+            <a class="case-more" href="/cases/seongbuk-gireumdong-geunsaeng-sigacham-2025">상세 보기 →</a>
           </div>
-          <div class="case-date-badge">2026. 10. 08 업데이트</div>
-          <a class="case-link" href="/cases/gangseo-magokdong-officetel-sigacham-2025">서울 강서구 마곡동 업무시설(오피스텔) 감정평가 사례 자세히 보기</a>
+          <div class="case-date-badge">2026. 10. 19 업데이트</div>
         </div>
       </div>
 
-      <div class="case-card fade-up" data-cat="재무보고" onclick="location.href='/cases/pyeongtaek-paengseongeup-toji-jaepyeongga-2025'">
-        <div class="case-card-head">
-          <div class="case-num">23</div>
-          <div class="case-tag">자산재평가 감정평가</div>
-          <div class="case-title">경기 평택시 팽성읍<br>공업용 토지 자산재평가 감정평가</div>
-          <div class="case-purpose">자산재평가(유형자산재평가) 목적</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">경기도 평택시 팽성읍</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">공시지가기준법 (규칙 제14조 제1항)</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">31억 8,589만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 10. 08 업데이트</div>
-          <a class="case-link" href="/cases/pyeongtaek-paengseongeup-toji-jaepyeongga-2025">경기 평택시 팽성읍 공업용 토지 자산재평가 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="특수관계인" onclick="location.href='/cases/gangnam-nonhyeondong-imdaeryo-2025'">
-        <div class="case-card-head">
-          <div class="case-num">19</div>
-          <div class="case-tag">특수관계인 거래 감정평가</div>
-          <div class="case-title">서울 강남구 논현동<br>근린생활시설 임대료 감정평가</div>
-          <div class="case-purpose">특수관계인 간 임대차의 적정임대료 산정</div>
-        </div>
-        <div class="case-card-body">
-          <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울특별시 강남구 논현동</div></div>
-            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년 · 2026년 (2개 연차)</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">임대사례비교법 (「감정평가에 관한 규칙」 제22조)</div></div>
-          </div>
-          <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">3억 9,589만원</div></div>
-            <div class="case-more">상세 보기 →</div>
-          </div>
-          <div class="case-date-badge">2026. 10. 13 업데이트</div>
-          <a class="case-link" href="/cases/gangnam-nonhyeondong-imdaeryo-2025">서울 강남구 논현동 근린생활시설 임대료 감정평가 사례 자세히 보기</a>
-        </div>
-      </div>
-
-      <div class="case-card fade-up" data-cat="구조화금융" onclick="location.href='/cases/junggu-gwanghuidong-sintakjaesan-2025'">
+      <div class="case-card fade-up" data-cat="구조화금융" onclick="location.href='/cases/yeongdeungpo-yeouidodong-eopmusiseol-sintak-2025'">
         <div class="case-card-head">
           <div class="case-num">25</div>
           <div class="case-tag">신탁재산 감정평가</div>
-          <div class="case-title">서울 중구 광희동<br>숙박시설(토지·건물) 감정평가</div>
+          <div class="case-title">서울 영등포구 여의도동<br>업무시설 구분건물 감정평가</div>
           <div class="case-purpose">신탁재산 일반거래(시가참고) 목적</div>
         </div>
         <div class="case-card-body">
           <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울특별시 중구 광희동</div></div>
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울특별시 영등포구 여의도동</div></div>
             <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">토지·건물 일괄 수익환원법 (원가방식으로 합리성 검토)</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">구분건물 일괄 거래사례비교법 (규칙 제16조)</div></div>
           </div>
           <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">24억원대</div></div>
-            <div class="case-more">상세 보기 →</div>
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">17억원대</div></div>
+            <a class="case-more" href="/cases/yeongdeungpo-yeouidodong-eopmusiseol-sintak-2025">상세 보기 →</a>
           </div>
-          <div class="case-date-badge">2026. 10. 14 업데이트</div>
-          <a class="case-link" href="/cases/junggu-gwanghuidong-sintakjaesan-2025">서울 중구 광희동 숙박시설(토지·건물) 감정평가 사례 자세히 보기</a>
+          <div class="case-date-badge">2026. 10. 16 업데이트</div>
         </div>
       </div>
 
@@ -1085,59 +628,499 @@
           </div>
           <div class="case-value-row">
             <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">43억원대</div></div>
-            <div class="case-more">상세 보기 →</div>
+            <a class="case-more" href="/cases/ulju-seosaengmyeon-geunsaeng-gongmae-2025">상세 보기 →</a>
           </div>
           <div class="case-date-badge">2026. 10. 15 업데이트</div>
-          <a class="case-link" href="/cases/ulju-seosaengmyeon-geunsaeng-gongmae-2025">울산 울주군 서생면 근린생활시설 공매 감정평가 사례 자세히 보기</a>
         </div>
       </div>
 
-      <div class="case-card fade-up" data-cat="구조화금융" onclick="location.href='/cases/yeongdeungpo-yeouidodong-eopmusiseol-sintak-2025'">
+      <div class="case-card fade-up" data-cat="구조화금융" onclick="location.href='/cases/junggu-gwanghuidong-sintakjaesan-2025'">
         <div class="case-card-head">
-          <div class="case-num">27</div>
+          <div class="case-num">23</div>
           <div class="case-tag">신탁재산 감정평가</div>
-          <div class="case-title">서울 영등포구 여의도동<br>업무시설 구분건물 감정평가</div>
+          <div class="case-title">서울 중구 광희동<br>숙박시설(토지·건물) 감정평가</div>
           <div class="case-purpose">신탁재산 일반거래(시가참고) 목적</div>
         </div>
         <div class="case-card-body">
           <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울특별시 영등포구 여의도동</div></div>
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울특별시 중구 광희동</div></div>
             <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">구분건물 일괄 거래사례비교법 (규칙 제16조)</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">토지·건물 일괄 수익환원법 (원가방식으로 합리성 검토)</div></div>
           </div>
           <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">17억원대</div></div>
-            <div class="case-more">상세 보기 →</div>
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">24억원대</div></div>
+            <a class="case-more" href="/cases/junggu-gwanghuidong-sintakjaesan-2025">상세 보기 →</a>
           </div>
-          <div class="case-date-badge">2026. 10. 16 업데이트</div>
-          <a class="case-link" href="/cases/yeongdeungpo-yeouidodong-eopmusiseol-sintak-2025">서울 영등포구 여의도동 업무시설 구분건물 감정평가 사례 자세히 보기</a>
+          <div class="case-date-badge">2026. 10. 14 업데이트</div>
         </div>
       </div>
 
-      <div class="case-card fade-up" data-cat="특수관계인" onclick="location.href='/cases/seongbuk-gireumdong-geunsaeng-sigacham-2025'">
+      <div class="case-card fade-up" data-cat="특수관계인" onclick="location.href='/cases/gangnam-nonhyeondong-imdaeryo-2025'">
         <div class="case-card-head">
-          <div class="case-num">28</div>
+          <div class="case-num">22</div>
+          <div class="case-tag">특수관계인 거래 감정평가</div>
+          <div class="case-title">서울 강남구 논현동<br>근린생활시설 임대료 감정평가</div>
+          <div class="case-purpose">특수관계인 간 임대차의 적정임대료 산정</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울특별시 강남구 논현동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년 · 2026년 (2개 연차)</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">임대사례비교법 (「감정평가에 관한 규칙」 제22조)</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">3억 9,589만원</div></div>
+            <a class="case-more" href="/cases/gangnam-nonhyeondong-imdaeryo-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 10. 13 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="재무보고" onclick="location.href='/cases/pyeongtaek-paengseongeup-toji-jaepyeongga-2025'">
+        <div class="case-card-head">
+          <div class="case-num">21</div>
+          <div class="case-tag">자산재평가 감정평가</div>
+          <div class="case-title">경기 평택시 팽성읍<br>공업용 토지 자산재평가 감정평가</div>
+          <div class="case-purpose">자산재평가(유형자산재평가) 목적</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">경기도 평택시 팽성읍</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">공시지가기준법 (규칙 제14조 제1항)</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">31억 8,589만원</div></div>
+            <a class="case-more" href="/cases/pyeongtaek-paengseongeup-toji-jaepyeongga-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 10. 08 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="특수관계인" onclick="location.href='/cases/gangseo-magokdong-officetel-sigacham-2025'">
+        <div class="case-card-head">
+          <div class="case-num">20</div>
           <div class="case-tag">시가참고 감정평가</div>
-          <div class="case-title">서울 성북구 길음동<br>근린생활시설 감정평가</div>
+          <div class="case-title">서울 강서구 마곡동<br>업무시설(오피스텔) 감정평가</div>
           <div class="case-purpose">일반거래(시가참고) 목적</div>
         </div>
         <div class="case-card-body">
           <div class="case-meta-row">
-            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울특별시 성북구 길음동</div></div>
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울특별시 강서구 마곡동</div></div>
             <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
-            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">토지 공시지가기준법 · 건물 원가법 (규칙 제14조·제15조)</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">토지·건물 일괄 거래사례비교법 (규칙 제16조)</div></div>
           </div>
           <div class="case-value-row">
-            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">260억 201만원</div></div>
-            <div class="case-more">상세 보기 →</div>
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">2억 2,000만원</div></div>
+            <a class="case-more" href="/cases/gangseo-magokdong-officetel-sigacham-2025">상세 보기 →</a>
           </div>
-          <div class="case-date-badge">2026. 10. 19 업데이트</div>
-          <a class="case-link" href="/cases/seongbuk-gireumdong-geunsaeng-sigacham-2025">서울 성북구 길음동 근린생활시설 감정평가 사례 자세히 보기</a>
+          <div class="case-date-badge">2026. 10. 08 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/seocho-banpo-banpojugong1-jeungyeo-2025'">
+        <div class="case-card-head">
+          <div class="case-num">19</div>
+          <div class="case-tag">증여재산 감정평가</div>
+          <div class="case-title">서울 서초구 반포동<br>반포주공1단지 아파트 입주권 감정평가</div>
+          <div class="case-purpose">증여재산 평가 및 관할세무서 제출 목적</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 서초구 반포동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">24억 7,000만원</div></div>
+            <a class="case-more" href="/cases/seocho-banpo-banpojugong1-jeungyeo-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 10. 06 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="특수관계인" onclick="location.href='/cases/cheonan-sindangdong-toji-imdaeryo-2025'">
+        <div class="case-card-head">
+          <div class="case-num">18</div>
+          <div class="case-tag">특수관계인 거래 감정평가</div>
+          <div class="case-title">충남 천안시 서북구 신당동<br>특수관계인 토지 임대료 감정평가</div>
+          <div class="case-purpose">특수관계인 간 임대차의 적정임대료 산정</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">충청남도 천안시 서북구 신당동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년 (임대차 1년간)</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">적산법 (기초가액 × 기대이율)</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">연간 실질임대료 1억 3,700만원</div></div>
+            <a class="case-more" href="/cases/cheonan-sindangdong-toji-imdaeryo-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 10. 02 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="재무보고" onclick="location.href='/cases/geumcheon-gasandong-jisiksaneop-jaepyeongga-2025'">
+        <div class="case-card-head">
+          <div class="case-num">17</div>
+          <div class="case-tag">자산재평가 감정평가</div>
+          <div class="case-title">서울 금천구 가산동<br>지식산업센터 자산재평가 감정평가</div>
+          <div class="case-purpose">자산재평가 (재무보고 목적)</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울특별시 금천구 가산동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">토지·건물 일괄 거래사례비교법 (규칙 제16조) 후 토지 배분비율 50% 적용</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">387,500,000원</div></div>
+            <a class="case-more" href="/cases/geumcheon-gasandong-jisiksaneop-jaepyeongga-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 10. 01 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="소송·경매" onclick="location.href='/cases/geumcheon-gasandong-officetel-gyeongmae-2025-v2'">
+        <div class="case-card-head">
+          <div class="case-num">16</div>
+          <div class="case-tag">법원경매 감정평가</div>
+          <div class="case-title">서울 금천구 가산동<br>오피스텔 법원경매 감정평가</div>
+          <div class="case-purpose">법원경매(촉탁) 목적</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울특별시 금천구 가산동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법 (제16조 일괄감정평가)</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">1억 9,200만원</div></div>
+            <a class="case-more" href="/cases/geumcheon-gasandong-officetel-gyeongmae-2025-v2">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 09. 30 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="소송·경매" onclick="location.href='/cases/geumcheon-gasandong-officetel-gyeongmae-2025'">
+        <div class="case-card-head">
+          <div class="case-num">15</div>
+          <div class="case-tag">법원경매 감정평가</div>
+          <div class="case-title">서울 금천구 가산동<br>오피스텔 법원경매 감정평가</div>
+          <div class="case-purpose">법원경매(촉탁) 목적</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울특별시 금천구 가산동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법 (제16조 일괄감정평가)</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">1억 9,200만원</div></div>
+            <a class="case-more" href="/cases/geumcheon-gasandong-officetel-gyeongmae-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 09. 29 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="재무보고" onclick="location.href='/cases/yeongdeungpo-yeongdeungpo5ga-jaepyeongga-2024'">
+        <div class="case-card-head">
+          <div class="case-num">14</div>
+          <div class="case-tag">자산재평가 감정평가</div>
+          <div class="case-title">서울 영등포구 영등포동5가<br>토지·건물 자산재평가 감정평가</div>
+          <div class="case-purpose">유형자산재평가(재무보고) 목적</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 영등포구 영등포동5가</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2024년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">토지 공시지가기준법 · 건물 원가법</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">173억원</div></div>
+            <a class="case-more" href="/cases/yeongdeungpo-yeongdeungpo5ga-jaepyeongga-2024">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 09. 28 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/gangdong-godeok-grasium-sangsok-2025'">
+        <div class="case-card-head">
+          <div class="case-num">13</div>
+          <div class="case-tag">상속재산 감정평가</div>
+          <div class="case-title">서울 강동구 고덕동<br>고덕그라시움 감정평가</div>
+          <div class="case-purpose">상속재산 평가 및 관할세무서 제출 목적</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 강동구 고덕동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">17억원</div></div>
+            <a class="case-more" href="/cases/gangdong-godeok-grasium-sangsok-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 09. 23 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/gangnam-dogok-woosung-sangsok-2025'">
+        <div class="case-card-head">
+          <div class="case-num">12</div>
+          <div class="case-tag">상속재산 감정평가</div>
+          <div class="case-title">서울 강남구 도곡동<br>도곡우성아파트 감정평가</div>
+          <div class="case-purpose">상속재산 평가 및 관할세무서 제출 목적</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 강남구 도곡동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">18억 7,000만원</div></div>
+            <a class="case-more" href="/cases/gangnam-dogok-woosung-sangsok-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 09. 23 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/songpa-bangi-olympicseonsu-sangsok-2025'">
+        <div class="case-card-head">
+          <div class="case-num">11</div>
+          <div class="case-tag">상속재산 감정평가</div>
+          <div class="case-title">서울 송파구 방이동<br>올림픽선수기자촌아파트 감정평가</div>
+          <div class="case-purpose">상속재산 평가 및 관할세무서 제출 목적</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 송파구 방이동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">29억 7,000만원</div></div>
+            <a class="case-more" href="/cases/songpa-bangi-olympicseonsu-sangsok-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 09. 23 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/songpa-munjeong-olympicfamily-sangsok-2025'">
+        <div class="case-card-head">
+          <div class="case-num">10</div>
+          <div class="case-tag">상속재산 감정평가</div>
+          <div class="case-title">서울 송파구 문정동<br>올림픽훼밀리타운 감정평가</div>
+          <div class="case-purpose">상속재산 평가 및 관할세무서 제출 목적</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 송파구 문정동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">24억 9,000만원</div></div>
+            <a class="case-more" href="/cases/songpa-munjeong-olympicfamily-sangsok-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 09. 18 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/gangnam-gaepo-hyundai-2025'">
+        <div class="case-card-head">
+          <div class="case-num">09</div>
+          <div class="case-tag">상속재산 감정평가</div>
+          <div class="case-title">서울 강남구 개포동<br>현대아파트 감정평가</div>
+          <div class="case-purpose">상속재산 평가 및 관할세무서 제출 목적</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 강남구 개포동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">40억 5,000만원</div></div>
+            <a class="case-more" href="/cases/gangnam-gaepo-hyundai-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 09. 16 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/namyangju-byeollae-ipark-suite-2026'">
+        <div class="case-card-head">
+          <div class="case-num">08</div>
+          <div class="case-tag">상속·증여 감정평가</div>
+          <div class="case-title">경기 남양주시 별내동<br>별내역아이파크스위트 상가 감정평가</div>
+          <div class="case-purpose">세무서 제출용 · 상속·증여세 신고 시가참고</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">경기 남양주시 별내동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2026년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">3억 3,400만원</div></div>
+            <a class="case-more" href="/cases/namyangju-byeollae-ipark-suite-2026">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 06. 23 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/gangdong-seongnae-2025'">
+        <div class="case-card-head">
+          <div class="case-num">07</div>
+          <div class="case-tag">상속 감정평가</div>
+          <div class="case-title">서울 강동구 성내동<br>근린생활시설 감정평가</div>
+          <div class="case-purpose">상속세 신고 및 세무서 제출 목적</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 강동구 성내동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법 + 원가법</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">15억 7,701만원</div></div>
+            <a class="case-more" href="/cases/gangdong-seongnae-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 04. 23 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/dongjak-daebang-epyeonhansesang-2026'">
+        <div class="case-card-head">
+          <div class="case-num">06</div>
+          <div class="case-tag">증여 감정평가</div>
+          <div class="case-title">서울 동작구 대방동<br>대방1차이-편한세상 감정평가</div>
+          <div class="case-purpose">증여재산 신고 및 세무서 제출 목적</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 동작구 대방동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2026년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">14억 9,000만원</div></div>
+            <a class="case-more" href="/cases/dongjak-daebang-epyeonhansesang-2026">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 04. 22 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/gangnam-ilwon-woosungchapt-2025'">
+        <div class="case-card-head">
+          <div class="case-num">05</div>
+          <div class="case-tag">상속 감정평가</div>
+          <div class="case-title">서울 강남구 일원동<br>우성7차아파트 감정평가</div>
+          <div class="case-purpose">상속재산 신고 및 세무서 제출 목적</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 강남구 일원동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">29억 5,000만원</div></div>
+            <a class="case-more" href="/cases/gangnam-ilwon-woosungchapt-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 04. 15 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/dongdaemun-imun-2025'">
+        <div class="case-card-head">
+          <div class="case-num">04</div>
+          <div class="case-tag">상속 · 증여</div>
+          <div class="case-title">서울 동대문구 이문동<br>이문아이파크자이 입주권 감정평가</div>
+          <div class="case-purpose">상속재산 신고 및 세무서 제출 목적 · 재개발 입주권</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 동대문구 이문동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법 (입주권)</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">11억 5,000만원</div></div>
+            <a class="case-more" href="/cases/dongdaemun-imun-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 04. 13 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/yangcheon-mokdong-2025'">
+        <div class="case-card-head">
+          <div class="case-num">03</div>
+          <div class="case-tag">상속 · 증여</div>
+          <div class="case-title">서울 양천구 목동<br>신시가지아파트 감정평가</div>
+          <div class="case-purpose">상속재산 신고 및 세무서 제출 목적</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 양천구 목동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">20억 7,000만원</div></div>
+            <a class="case-more" href="/cases/yangcheon-mokdong-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 04. 08 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/seongbuk-dongseondong-2025'">
+        <div class="case-card-head">
+          <div class="case-num">02</div>
+          <div class="case-tag">상속 · 증여</div>
+          <div class="case-title">서울 성북구 동선동<br>다가구주택 감정평가</div>
+          <div class="case-purpose">상속재산 신고 및 세무서 제출 목적</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 성북구 동선동2가</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">공시지가기준법 + 원가법</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">7억 9,994만원</div></div>
+            <a class="case-more" href="/cases/seongbuk-dongseondong-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 04. 07 업데이트</div>
+        </div>
+      </div>
+
+      <div class="case-card fade-up" data-cat="상속·증여" onclick="location.href='/cases/yeouido-gwangjang-2025'">
+        <div class="case-card-head">
+          <div class="case-num">01</div>
+          <div class="case-tag">상속 · 증여</div>
+          <div class="case-title">서울 여의도 광장아파트<br>감정평가</div>
+          <div class="case-purpose">상속재산 신고 및 세무서 제출 목적</div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-meta-row">
+            <div class="case-meta"><div class="case-meta-label">소재지</div><div class="case-meta-val">서울 영등포구 여의도동</div></div>
+            <div class="case-meta"><div class="case-meta-label">기준시점</div><div class="case-meta-val">2025년</div></div>
+            <div class="case-meta"><div class="case-meta-label">평가방법</div><div class="case-meta-val">거래사례비교법</div></div>
+          </div>
+          <div class="case-value-row">
+            <div><div class="case-value-label">최종 감정평가액</div><div class="case-value-num">36억 9,000만원</div></div>
+            <a class="case-more" href="/cases/yeouido-gwangjang-2025">상세 보기 →</a>
+          </div>
+          <div class="case-date-badge">2026. 03. 31 업데이트</div>
         </div>
       </div>
     </div>
     <div class="no-result" id="noResult">해당 카테고리의 사례가 없습니다.</div>
-    <a href="/cases/">전체 감정평가 사례 목록 보기</a>
+    <div class="cases-more-wrap" id="casesMoreWrap">
+      <button class="cases-more-btn" type="button" id="casesMoreBtn" onclick="toggleCaseList()" aria-expanded="false" aria-controls="casesGrid"><span id="casesMoreText">사례 더 보기</span><span class="cases-more-arrow" aria-hidden="true">▾</span></button>
+    </div>
   </div>
 </section>
 
@@ -1263,7 +1246,37 @@ function filterCases(cat, btn) {
     else { card.classList.add('hidden'); }
   });
   document.getElementById('noResult').classList.toggle('show', visible === 0);
+  casesExpanded = false;
+  applyCaseLimit();
 }
+var CASE_LIMIT = 9, casesExpanded = false, caseLimitReady = false;
+function applyCaseLimit() {
+  var shown = 0, total = 0;
+  document.querySelectorAll('.case-card').forEach(function (card) {
+    if (card.classList.contains('hidden')) { card.classList.remove('over-limit'); return; }
+    total++;
+    if (!casesExpanded && shown >= CASE_LIMIT) { card.classList.add('over-limit'); }
+    else { card.classList.remove('over-limit'); if (caseLimitReady) card.classList.add('visible'); shown++; }
+  });
+  var wrap = document.getElementById('casesMoreWrap');
+  var btn = document.getElementById('casesMoreBtn');
+  var txt = document.getElementById('casesMoreText');
+  if (!wrap || !btn || !txt) return;
+  wrap.style.display = (total > CASE_LIMIT) ? '' : 'none';
+  wrap.classList.toggle('expanded', casesExpanded);
+  btn.setAttribute('aria-expanded', casesExpanded ? 'true' : 'false');
+  txt.textContent = casesExpanded ? '접기' : '사례 더 보기 (전체 ' + total + '건)';
+  caseLimitReady = true;
+}
+function toggleCaseList() {
+  casesExpanded = !casesExpanded;
+  applyCaseLimit();
+  if (!casesExpanded) {
+    var g = document.getElementById('casesGrid');
+    if (g) window.scrollTo({ top: g.offsetTop - 120, behavior: 'smooth' });
+  }
+}
+applyCaseLimit();
 function openModal(id) { document.getElementById('modal-' + id).classList.add('open'); document.body.style.overflow = 'hidden'; }
 function closeModal(id) { document.getElementById('modal-' + id).classList.remove('open'); document.body.style.overflow = ''; }
 function closeModalOutside(e) { if (e.target.classList.contains('modal-overlay')) { e.target.classList.remove('open'); document.body.style.overflow = ''; } }

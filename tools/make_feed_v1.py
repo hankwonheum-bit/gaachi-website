@@ -185,7 +185,7 @@ def build_rss(items: list[dict], now: datetime) -> str:
     out.append('<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">')
     out.append("  <channel>")
     out.append("    <title>%s</title>" % esc(CHANNEL_TITLE))
-    out.append("    <link>%s/#cases</link>" % SITE)
+    out.append("    <link>%s/cases/</link>" % SITE)
     out.append("    <description>%s</description>" % esc(CHANNEL_DESC))
     out.append("    <language>%s</language>" % CHANNEL_LANG)
     out.append('    <atom:link href="%s/feed.xml" rel="self" type="application/rss+xml" />' % SITE)

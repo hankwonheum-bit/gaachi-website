@@ -6,10 +6,17 @@
     <description>㈜감정평가법인 가치앤같이가 실제로 수행한 감정평가 사례. 상속재산 감정평가, 증여세 감정평가, 세무서 제출용 시가인정액, 취득세 시가인정액, 법원 촉탁·담보·보상 평가 등 목적별 실무 사례를 공개합니다.</description>
     <language>ko</language>
     <atom:link href="https://gaachi.co.kr/feed.xml" rel="self" type="application/rss+xml" />
-    <lastBuildDate>Fri, 23 Oct 2026 00:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Mon, 26 Oct 2026 00:00:00 +0900</lastBuildDate>
     <generator>tools/make_feed_v1.py</generator>
     <docs>https://www.rssboard.org/rss-specification</docs>
     <ttl>1440</ttl>
+    <item>
+      <title>서울 서초구 서초동 다세대주택 시가참고 감정평가 사례 — 가치앤같이 감정평가법인</title>
+      <link>https://gaachi.co.kr/cases/seocho-seochodong-dasedae-sigacham-2025</link>
+      <guid isPermaLink="true">https://gaachi.co.kr/cases/seocho-seochodong-dasedae-sigacham-2025</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 +0900</pubDate>
+      <description><![CDATA[서울특별시 서초구 서초동 다세대주택 1세대(전유면적 64.45㎡, 소유권대지권 27.6㎡)의 일반거래(시가참고) 목적 감정평가 사례. 기준시점 2025년, 감정평가액 551,000,000원. 「감정평가에 관한 규칙」 제16조 토지·건물 일괄 거래사례비교법 적용. ㈜감정평가법인 가치앤같이.]]></description>
+    </item>
     <item>
       <title>안양 만안구 안양동 구분건물 공매 감정평가 사례 — 가치앤같이 감정평가법인</title>
       <link>https://gaachi.co.kr/cases/anyang-anyangdong-gubungeonmul-gongmae-2026</link>

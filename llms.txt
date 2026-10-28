@@ -4,7 +4,8 @@
 
 ## 감정평가 사례
 
-- [감정평가 사례 모음](https://gaachi.co.kr/cases/): ㈜감정평가법인 가치앤같이가 수행한 감정평가 사례 32건의 목록입니다.
+- [서울 구로구 구로동 중앙유통단지상가 상속 감정평가 사례](https://gaachi.co.kr/cases/guro-gurodong-jungangyutong-sangsok-2025): 서울특별시 구로구 구로동 중앙유통단지상가 구분상가(전유면적 18.36㎡, 소유권대지권 13.40㎡) 상속재산 감정평가 사례. 기준시점 2025년, 최종 감정평가액 139,000,000원.
+- [감정평가 사례 모음](https://gaachi.co.kr/cases/): ㈜감정평가법인 가치앤같이가 수행한 감정평가 사례 33건의 목록입니다.
 - [서울 서초구 서초동 다세대주택 시가참고 감정평가 사례](https://gaachi.co.kr/cases/seocho-seochodong-dasedae-sigacham-2025): 서울특별시 서초구 서초동 다세대주택 1세대(전유면적 64.45㎡, 소유권대지권 27.6㎡)의 일반거래(시가참고) 목적 감정평가 사례. 기준시점 2025년, 감정평가액 551,000,000원.
 - [안양 만안구 안양동 구분건물 공매 감정평가 사례](https://gaachi.co.kr/cases/anyang-anyangdong-gubungeonmul-gongmae-2026): 경기도 안양시 만안구 안양동 구분건물(전유면적 약 20㎡)의 공매 목적 감정평가 사례. 기준시점 2026년, 감정평가액 1억원대.
 - [서울 금천구 가산동 지식산업센터 시가참고 감정평가 사례](https://gaachi.co.kr/cases/geumcheon-gasandong-jisiksaneop-sigacham-2025): 서울특별시 금천구 가산동 지식산업센터 1개호(전유면적 105.97㎡, 소유권대지권 24.91㎡)의 일반거래(시가참고) 목적 감정평가 사례. 기준시점 2025년, 감정평가액 525,000,000원.
@@ -68,4 +69,4 @@
 
 - 전체 페이지 목록: https://gaachi.co.kr/sitemap.xml
 - 신규 사례 RSS 피드: https://gaachi.co.kr/feed.xml
-- 최종 갱신: 2026-10-26 (tools/make_llms_txt_v1.py 로 자동 생성)
+- 최종 갱신: 2026-10-28 (tools/make_llms_txt_v1.py 로 자동 생성)

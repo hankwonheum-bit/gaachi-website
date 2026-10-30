@@ -4,7 +4,8 @@
 
 ## 감정평가 사례
 
-- [감정평가 사례 모음](https://gaachi.co.kr/cases/): ㈜감정평가법인 가치앤같이가 수행한 감정평가 사례 34건의 목록입니다.
+- [감정평가 사례 모음](https://gaachi.co.kr/cases/): ㈜감정평가법인 가치앤같이가 수행한 감정평가 사례 35건의 목록입니다.
+- [성동구 성수동 토지 임대료 감정평가 사례](https://gaachi.co.kr/cases/seongdong-seongsudong-toji-imdaeryo-2025): 서울특별시 성동구 성수동 준공업지역 토지 3필지(임대면적 1,391.4㎡)의 임대료 감정평가 사례. 기준시점 2025년, 연간 실질임대료 3,040,000,000원.
 - [서울 용산구 산천동 리버힐삼성아파트 상속 감정평가 사례](https://gaachi.co.kr/cases/yongsan-sancheon-riverhill-sangsok-2025): 서울특별시 용산구 산천동 리버힐삼성아파트(전유면적 84.98㎡, 주거공용 22.94㎡, 소유권대지권 33.08㎡) 상속재산 감정평가 사례.
 - [서울 구로구 구로동 중앙유통단지상가 상속 감정평가 사례](https://gaachi.co.kr/cases/guro-gurodong-jungangyutong-sangsok-2025): 서울특별시 구로구 구로동 중앙유통단지상가 구분상가(전유면적 18.36㎡, 소유권대지권 13.40㎡) 상속재산 감정평가 사례. 기준시점 2025년, 최종 감정평가액 139,000,000원.
 - [서울 서초구 서초동 다세대주택 시가참고 감정평가 사례](https://gaachi.co.kr/cases/seocho-seochodong-dasedae-sigacham-2025): 서울특별시 서초구 서초동 다세대주택 1세대(전유면적 64.45㎡, 소유권대지권 27.6㎡)의 일반거래(시가참고) 목적 감정평가 사례. 기준시점 2025년, 감정평가액 551,000,000원.
@@ -70,4 +71,4 @@
 
 - 전체 페이지 목록: https://gaachi.co.kr/sitemap.xml
 - 신규 사례 RSS 피드: https://gaachi.co.kr/feed.xml
-- 최종 갱신: 2026-10-29 (tools/make_llms_txt_v1.py 로 자동 생성)
+- 최종 갱신: 2026-10-30 (tools/make_llms_txt_v1.py 로 자동 생성)

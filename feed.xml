@@ -6,10 +6,17 @@
     <description>㈜감정평가법인 가치앤같이가 실제로 수행한 감정평가 사례. 상속재산 감정평가, 증여세 감정평가, 세무서 제출용 시가인정액, 취득세 시가인정액, 법원 촉탁·담보·보상 평가 등 목적별 실무 사례를 공개합니다.</description>
     <language>ko</language>
     <atom:link href="https://gaachi.co.kr/feed.xml" rel="self" type="application/rss+xml" />
-    <lastBuildDate>Fri, 30 Oct 2026 00:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Sat, 31 Oct 2026 00:00:00 +0900</lastBuildDate>
     <generator>tools/make_feed_v1.py</generator>
     <docs>https://www.rssboard.org/rss-specification</docs>
     <ttl>1440</ttl>
+    <item>
+      <title>서울 마포구 망원동 근린생활시설 상속재산 감정평가 사례 (기준시점 2025년) | 가치앤같이</title>
+      <link>https://gaachi.co.kr/cases/mapo-mangwondong-geunsaeng-sangsok-2025</link>
+      <guid isPermaLink="true">https://gaachi.co.kr/cases/mapo-mangwondong-geunsaeng-sangsok-2025</guid>
+      <pubDate>Sat, 31 Oct 2026 00:00:00 +0900</pubDate>
+      <description><![CDATA[서울 마포구 망원동 근린생활시설(토지·건물)의 상속재산 감정평가 사례입니다. 토지는 공시지가기준법, 건물은 원가법으로 평가해 감정평가액 3,356,338,140원으로 결정하였습니다. 기준시점 2025년.]]></description>
+    </item>
     <item>
       <title>성동구 성수동 토지 임대료 감정평가 사례 — 가치앤같이 감정평가법인</title>
       <link>https://gaachi.co.kr/cases/seongdong-seongsudong-toji-imdaeryo-2025</link>

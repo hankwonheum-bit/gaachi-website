@@ -4,8 +4,9 @@
 
 ## 감정평가 사례
 
+- [화성시 마도면 토지 증여재산 감정평가 사례](https://gaachi.co.kr/cases/hwaseong-madomyeon-toji-jeungyeo-2025): 경기도 화성시 마도면 금당리 토지 2필지(면적 합계 2,673㎡)의 증여재산 감정평가 사례. 기준시점 2025년, 감정평가액 824,260,000원.
+- [감정평가 사례 모음](https://gaachi.co.kr/cases/): ㈜감정평가법인 가치앤같이가 수행한 감정평가 사례 41건의 목록입니다.
 - [강서구 공항동 주택 상속재산 감정평가 사례](https://gaachi.co.kr/cases/gangseo-gonghangdong-jutaek-sangsok-2025): 서울특별시 강서구 공항동 주택(토지 132㎡·건물 연면적 178.53㎡)의 상속재산 감정평가 사례. 기준시점 2025년, 감정평가액 935,678,040원.
-- [감정평가 사례 모음](https://gaachi.co.kr/cases/): ㈜감정평가법인 가치앤같이가 수행한 감정평가 사례 40건의 목록입니다.
 - [경기 평택시 비전동 다가구주택 상속재산 감정평가 사례 (기준시점 2025년)](https://gaachi.co.kr/cases/pyeongtaek-bijeondong-dagagu-sangsok-2025): 경기 평택시 비전동 다가구주택(토지·건물)의 상속재산 세무서 제출용 감정평가 사례입니다. 토지는 공시지가기준법, 건물은 원가법으로 평가해 감정평가액 1,088,510,600원으로 결정하였습니다.
 - [서울 종로구 부암동 단독주택 상속재산 감정평가 사례 (기준시점 2025년)](https://gaachi.co.kr/cases/jongno-buamdong-jutaek-sangsok-2025): 서울 종로구 부암동 단독주택(토지·건물)의 상속재산 세무서 제출용 감정평가 사례입니다. 토지는 공시지가기준법, 건물은 원가법으로 평가해 감정평가액 1,607,198,560원으로 결정하였습니다.
 - [서울 강동구 고덕동 근린생활시설 세무서 제출용 감정평가 사례 (기준시점 2025년)](https://gaachi.co.kr/cases/gangdong-godeokdong-geunsaeng-semujechul-2025): 서울 강동구 고덕동 근린생활시설(토지·건물)의 관할 세무서 제출용 감정평가 사례입니다. 토지는 공시지가기준법, 건물은 원가법으로 평가해 감정평가액 2,475,149,960원으로 결정하였습니다.
@@ -76,4 +77,4 @@
 
 - 전체 페이지 목록: https://gaachi.co.kr/sitemap.xml
 - 신규 사례 RSS 피드: https://gaachi.co.kr/feed.xml
-- 최종 갱신: 2026-11-06 (tools/make_llms_txt_v1.py 로 자동 생성)
+- 최종 갱신: 2026-11-09 (tools/make_llms_txt_v1.py 로 자동 생성)

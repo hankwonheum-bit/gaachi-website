@@ -4,8 +4,9 @@
 
 ## 감정평가 사례
 
+- [경기 광명시 광명동 다세대주택 시가참고 감정평가 사례](https://gaachi.co.kr/cases/gwangmyeong-gwangmyeongdong-dasedae-sigacham-2025): 경기도 광명시 광명동 다세대주택 1세대(전유면적 54.89㎡, 소유권대지권 24.7㎡)의 일반거래(시가참고) 목적 감정평가 사례. 기준시점 2025년, 감정평가액 286,000,000원.
+- [감정평가 사례 모음](https://gaachi.co.kr/cases/): ㈜감정평가법인 가치앤같이가 수행한 감정평가 사례 49건의 목록입니다.
 - [서울 금천구 가산동 아파트형공장 구분건물 상속재산 감정평가 사례](https://gaachi.co.kr/cases/geumcheon-gasandong-jisiksaneop-sangsok-2025): 서울 금천구 가산동 아파트형공장(지식산업센터) 구분건물 2개호(전유면적 합계 265.6㎡)의 상속재산 감정평가 사례입니다.
-- [감정평가 사례 모음](https://gaachi.co.kr/cases/): ㈜감정평가법인 가치앤같이가 수행한 감정평가 사례 48건의 목록입니다.
 - [합천군 덕곡면 임야 상속재산 감정평가 사례](https://gaachi.co.kr/cases/hapcheon-deokgokmyeon-toji-sangsok-2025): 경상남도 합천군 덕곡면·용주면 토지 4필지(면적 합계 78,744㎡)의 상속재산 감정평가 사례. 기준시점 2025년, 감정평가액 160,954,400원.
 - [경기 의정부시 가능동 다세대주택 상속재산 감정평가 사례](https://gaachi.co.kr/cases/uijeongbu-ganeungdong-dasedae-sangsok-2025): 경기 의정부시 가능동 다세대주택 1세대(전유면적 41.177㎡)의 상속재산 감정평가 사례입니다.
 - [서울 관악구 신림동 다세대주택 증여재산 감정평가 사례](https://gaachi.co.kr/cases/gwanak-sillimdong-dasedae-jeungyeo-2025): 서울 관악구 신림동 다세대주택 1세대(전유면적 66.88㎡)의 증여재산 감정평가 사례입니다.
@@ -84,4 +85,4 @@
 
 - 전체 페이지 목록: https://gaachi.co.kr/sitemap.xml
 - 신규 사례 RSS 피드: https://gaachi.co.kr/feed.xml
-- 최종 갱신: 2026-11-18 (tools/make_llms_txt_v1.py 로 자동 생성)
+- 최종 갱신: 2026-11-25 (tools/make_llms_txt_v1.py 로 자동 생성)

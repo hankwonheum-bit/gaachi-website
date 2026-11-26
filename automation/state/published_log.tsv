@@ -41,3 +41,4 @@ date_kst	filename	url	commit_sha	result
 2026-11-16	041_uijeongbu-ganeungdong-dasedae-sangsok-2025.html	https://gaachi.co.kr/cases/uijeongbu-ganeungdong-dasedae-sangsok-2025	c060017	OK
 2026-11-17	042_hapcheon-deokgokmyeon-toji-sangsok-2025.html	https://gaachi.co.kr/cases/hapcheon-deokgokmyeon-toji-sangsok-2025	b3cd77d	OK
 2026-11-18	044_geumcheon-gasandong-jisiksaneop-sangsok-2025.html	https://gaachi.co.kr/cases/geumcheon-gasandong-jisiksaneop-sangsok-2025	a1d9407	OK
+2026-11-25	024_gwangmyeong-gwangmyeongdong-dasedae-sigacham-2025.html	https://gaachi.co.kr/cases/gwangmyeong-gwangmyeongdong-dasedae-sigacham-2025	3fe8233	PUSH_FAIL
